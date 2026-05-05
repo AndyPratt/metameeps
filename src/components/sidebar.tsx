@@ -8,9 +8,7 @@ import {
   FlaskConical,
   BarChart3,
   RefreshCw,
-  ClipboardList,
   Sparkles,
-  UserCircle,
 } from "lucide-react";
 
 const navItems = [
@@ -19,8 +17,6 @@ const navItems = [
   { label: "Test", href: "/test", icon: FlaskConical },
   { label: "Evaluate", href: "/evaluate", icon: BarChart3 },
   { label: "Iterate", href: "/iterate", icon: RefreshCw },
-  { label: "Rubrics", href: "/rubrics", icon: ClipboardList },
-  { label: "Personas", href: "/personas", icon: UserCircle },
 ];
 
 export function Sidebar() {

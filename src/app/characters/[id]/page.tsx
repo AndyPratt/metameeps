@@ -2,7 +2,7 @@
 
 import { use, useState } from "react";
 import Link from "next/link";
-import { characters, voices, dialogueTests, callTestSessions, evalRuns, products, platforms, uiOverlays } from "@/lib/mock-data";
+import { characters, voices, dialogueTests, callTestSessions, evalRuns } from "@/lib/mock-data";
 import {
   ArrowLeft,
   Clock,
@@ -32,13 +32,12 @@ import {
 export default function CharacterDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const character = characters.find((c) => c.id === id);
-  const [activeTab, setActiveTab] = useState<"overview" | "voice" | "configurations" | "scenes" | "history">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "voice" | "scenes" | "history">("overview");
   const [selectedVersion, setSelectedVersion] = useState<number | null>(null);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [versionNote, setVersionNote] = useState("");
   const [hasEdits, setHasEdits] = useState(false);
   const [previewingVersion, setPreviewingVersion] = useState<number | null>(null);
-  const [showAddConfig, setShowAddConfig] = useState(false);
 
   if (!character) {
     return (
@@ -59,10 +58,11 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
 
   const hasScenes = character.scenes.length > 0;
 
+  const config = character.configurations[0] || null;
+
   const tabs = [
     { id: "overview" as const, label: "Overview" },
     { id: "voice" as const, label: "Voice & Embodiment" },
-    { id: "configurations" as const, label: "Configurations" },
     ...(hasScenes ? [{ id: "scenes" as const, label: `Scenes (${character.scenes.length})` }] : []),
     { id: "history" as const, label: "Version History" },
   ];
@@ -171,6 +171,21 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
         {activeTab === "overview" && (
           <div className="grid grid-cols-3 gap-8">
             <div className="col-span-2 space-y-6">
+              {config ? (
+                <div className="flex items-center gap-3 pb-4 border-b border-border">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-accent/10 rounded-lg text-sm font-medium text-accent">
+                    <Tag className="w-3.5 h-3.5" />
+                    {config.product}
+                  </span>
+                  <span className="text-sm text-muted-foreground">{config.platform}</span>
+                  <span className="text-xs text-muted-foreground ml-auto">UI: {config.uiOverlay}</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 pb-4 border-b border-border">
+                  <span className="text-sm text-muted-foreground italic">No product or platform assigned</span>
+                </div>
+              )}
+
               <Section title="Identity">
                 <p className="text-sm text-foreground leading-relaxed">{character.identity}</p>
               </Section>
@@ -186,6 +201,14 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
               <Section title="Biography">
                 <p className="text-sm text-foreground leading-relaxed">{character.biography}</p>
               </Section>
+
+              {config?.promptConstraints && (
+                <Section title="Prompt Constraints">
+                  <div className="bg-muted rounded-lg p-3">
+                    <p className="text-sm text-foreground leading-relaxed">{config.promptConstraints}</p>
+                  </div>
+                </Section>
+              )}
 
               <SystemPromptBlock character={character} />
             </div>
@@ -228,97 +251,6 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
 
         {activeTab === "voice" && (
           <VoiceEmbodimentTab character={character} voices={voices} />
-        )}
-
-        {activeTab === "configurations" && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-sm text-muted-foreground">Product and platform-specific configurations for this character.</p>
-              <button
-                onClick={() => setShowAddConfig(true)}
-                className="flex items-center gap-1.5 px-3 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                Add Configuration
-              </button>
-            </div>
-
-            {showAddConfig && (
-              <div className="border border-accent/30 rounded-xl p-5 bg-accent-light/20">
-                <h3 className="text-sm font-semibold text-foreground mb-4">New Configuration</h3>
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                  <div>
-                    <label className="block text-xs font-medium text-muted-foreground mb-1.5">Product</label>
-                    <select className="w-full px-3 py-2.5 bg-white border border-border rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20">
-                      <option value="">Select product...</option>
-                      {products.map((p) => <option key={p} value={p}>{p}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-muted-foreground mb-1.5">Platform</label>
-                    <select className="w-full px-3 py-2.5 bg-white border border-border rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20">
-                      <option value="">Select platform...</option>
-                      {platforms.map((p) => <option key={p} value={p}>{p}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-muted-foreground mb-1.5">UI Overlay</label>
-                    <select className="w-full px-3 py-2.5 bg-white border border-border rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20">
-                      <option value="">Select overlay...</option>
-                      {uiOverlays.map((o) => <option key={o} value={o}>{o}</option>)}
-                    </select>
-                  </div>
-                </div>
-                <div className="mb-4">
-                  <label className="block text-xs font-medium text-muted-foreground mb-1.5">Prompt Constraints</label>
-                  <textarea
-                    placeholder="Product-specific prompt additions or overrides..."
-                    rows={3}
-                    className="w-full px-3 py-2.5 bg-white border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20 resize-none"
-                  />
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setShowAddConfig(false)}
-                    className="px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors"
-                  >
-                    Add Configuration
-                  </button>
-                  <button
-                    onClick={() => setShowAddConfig(false)}
-                    className="px-4 py-2 bg-muted text-foreground rounded-lg text-sm hover:bg-border transition-colors"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {character.configurations.length === 0 && !showAddConfig ? (
-              <div className="border border-dashed border-border rounded-xl p-12 text-center">
-                <Settings className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
-                <p className="text-sm font-medium text-foreground mb-1">No configurations yet</p>
-                <p className="text-xs text-muted-foreground">Add a product/platform configuration to deploy this character.</p>
-              </div>
-            ) : (
-              character.configurations.map((cfg) => (
-                <div key={cfg.id} className="border border-border rounded-xl p-5">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <Tag className="w-4 h-4 text-accent" />
-                      <span className="text-sm font-semibold text-foreground">{cfg.product}</span>
-                      <span className="text-xs text-muted-foreground">{cfg.platform}</span>
-                    </div>
-                    <span className="text-xs text-muted-foreground">UI: {cfg.uiOverlay}</span>
-                  </div>
-                  <div className="bg-muted rounded-lg p-3">
-                    <p className="text-xs font-medium text-muted-foreground mb-1">Prompt Constraints</p>
-                    <p className="text-sm text-foreground">{cfg.promptConstraints}</p>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
         )}
 
         {activeTab === "scenes" && hasScenes && (

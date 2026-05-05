@@ -40,7 +40,6 @@ export const characters: Character[] = [
     ],
     configurations: [
       { id: "cfg-1", product: "C50", platform: "1P Characters", promptConstraints: "Keep responses under 3 sentences. Avoid clinical terminology.", uiOverlay: "vibe-call", rubricSetId: "rub-1" },
-      { id: "cfg-2", product: "CiV", platform: "C50", promptConstraints: "More playful tone. Can use emojis.", uiOverlay: "metagen", rubricSetId: "rub-2" },
     ],
     scenes: [],
     createdAt: "2026-04-15T10:00:00Z",

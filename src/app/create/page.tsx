@@ -14,6 +14,8 @@ import {
   Check,
   Sparkles,
   Plus,
+  Copy,
+  FileText,
   ChevronDown,
   ChevronUp,
   ArrowUp,
@@ -354,38 +356,7 @@ export default function CreatePage() {
             </div>
           </div>
 
-          <div className="w-[360px] border-l border-border p-6 sticky top-[120px] self-start">
-            <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-4">Character Preview</h3>
-            <div className="border border-border rounded-xl overflow-hidden">
-              <div className="aspect-[3/4] bg-muted flex items-center justify-center">
-                {form.name ? (
-                  <div className="text-center">
-                    <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-2">
-                      <span className="text-2xl font-semibold text-accent">{form.name[0]?.toUpperCase()}</span>
-                    </div>
-                    <p className="text-sm font-medium text-foreground">{form.name}</p>
-                  </div>
-                ) : (
-                  <div className="text-center p-4">
-                    <Sparkles className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
-                    <p className="text-xs text-muted-foreground">Start filling in details to preview your character</p>
-                  </div>
-                )}
-              </div>
-              {form.name && (
-                <div className="p-4 border-t border-border">
-                  <p className="text-xs font-medium text-foreground mb-1">{form.name}</p>
-                  {form.identity && <p className="text-xs text-muted-foreground line-clamp-2">{form.identity}</p>}
-                  {form.goal && (
-                    <div className="mt-2 pt-2 border-t border-border">
-                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">Goal</p>
-                      <p className="text-xs text-foreground line-clamp-2">{form.goal}</p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
+          <CreateSidebarPreview form={form} />
         </div>
       )}
 
@@ -890,6 +861,73 @@ function Field({ label, helper, children }: { label: string; helper?: string; ch
   );
 }
 
+function CreateSidebarPreview({ form }: { form: { name: string; identity: string; personality: string; communicationStyle: string; goal: string; biography: string; product: string; platform: string } }) {
+  const [copied, setCopied] = useState(false);
+
+  const sections = [
+    form.identity && `# Identity\n${form.identity}`,
+    form.personality && `# Personality\n${form.personality}`,
+    form.communicationStyle && `# Communication Style\n${form.communicationStyle}`,
+    form.goal && `# Goal\n${form.goal}`,
+    form.biography && `# Biography\n${form.biography}`,
+  ].filter(Boolean);
+
+  const prompt = sections.join("\n\n");
+  const hasContent = sections.length > 0;
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(prompt);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="w-[360px] border-l border-border sticky top-[120px] self-start flex flex-col max-h-[calc(100vh-120px)]">
+      <div className="px-5 py-3 border-b border-border flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-2">
+          <FileText className="w-4 h-4 text-muted-foreground" />
+          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">System Prompt</h3>
+        </div>
+        {hasContent && (
+          <button
+            onClick={handleCopy}
+            className="flex items-center gap-1 px-2 py-1 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          >
+            {copied ? (
+              <><Check className="w-3 h-3 text-success" /> Copied</>
+            ) : (
+              <><Copy className="w-3 h-3" /> Copy</>
+            )}
+          </button>
+        )}
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-5">
+        {hasContent ? (
+          <pre className="text-sm text-foreground leading-relaxed whitespace-pre-wrap font-mono">
+            {prompt}
+          </pre>
+        ) : (
+          <div className="flex flex-col items-center justify-center h-full text-center py-12">
+            <FileText className="w-8 h-8 text-muted-foreground/20 mb-3" />
+            <p className="text-xs text-muted-foreground">
+              Start filling in the character fields to see the system prompt build in real time
+            </p>
+          </div>
+        )}
+      </div>
+
+      {hasContent && (
+        <div className="px-5 py-3 border-t border-border shrink-0">
+          <p className="text-[11px] text-muted-foreground">
+            {prompt.length} characters &middot; {sections.length} sections
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface Suggestion {
   title: string;
   description: string;
@@ -965,6 +1003,32 @@ const communicationStyleSliders: SliderDimension[] = [
   { label: "Metaphor use", left: "Literal", right: "Figurative", defaultValue: 50 },
 ];
 
+function describeLevel(value: number, low: string, mid: string, high: string): string {
+  if (value <= 25) return low;
+  if (value <= 45) return `somewhat ${mid.toLowerCase()}`;
+  if (value <= 55) return mid;
+  if (value <= 75) return `quite ${high.toLowerCase()}`;
+  return high;
+}
+
+function generatePersonalityFromSliders(values: Record<string, number>): string {
+  const energy = describeLevel(values.Energy ?? 50, "Reserved and understated", "balanced in energy", "Expressive and animated");
+  const humor = describeLevel(values.Humor ?? 50, "Serious and earnest", "balanced between serious and playful", "Playful and humorous");
+  const empathy = describeLevel(values.Empathy ?? 50, "Analytical and logic-driven", "balanced between analytical and emotional", "Deeply empathetic and emotionally attuned");
+  const patience = describeLevel(values.Patience ?? 50, "Direct and to-the-point", "moderately patient", "Exceptionally patient and unhurried");
+
+  return `${energy}. ${humor}. ${empathy}. ${patience}. Adapts tone to match the user's emotional state while staying true to these core traits.`;
+}
+
+function generateCommStyleFromSliders(values: Record<string, number>): string {
+  const formality = describeLevel(values.Formality ?? 50, "Very casual and informal — speaks like a close friend", "Moderately formal", "Polished and professional in tone");
+  const length = describeLevel(values.Length ?? 50, "Concise and punchy — short sentences, no filler", "Moderate response length", "Detailed and thorough — provides rich, expansive responses");
+  const questioning = describeLevel(values.Questioning ?? 50, "Declarative — states observations and advice directly", "Mixes statements with questions", "Socratic — guides through questions rather than answers");
+  const metaphor = describeLevel(values["Metaphor use"] ?? 50, "Literal and straightforward — avoids figurative language", "Occasionally uses metaphors", "Figurative and vivid — frequently uses metaphors, analogies, and storytelling");
+
+  return `${formality}. ${length}. ${questioning}. ${metaphor}.`;
+}
+
 function PromptFieldWithSuggestions({
   label,
   helper,
@@ -988,21 +1052,32 @@ function PromptFieldWithSuggestions({
 }) {
   const [expanded, setExpanded] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState<string | null>(null);
+  const [sliderDriven, setSliderDriven] = useState(false);
   const [sliderValues, setSliderValues] = useState<Record<string, number>>(
     () => Object.fromEntries((sliders || []).map((s) => [s.label, s.defaultValue]))
   );
 
+  const generateFromSliders = (values: Record<string, number>) => {
+    if (label === "Personality") return generatePersonalityFromSliders(values);
+    if (label === "Communication Style") return generateCommStyleFromSliders(values);
+    return "";
+  };
+
   const selectSuggestion = (s: Suggestion) => {
     onChange(s.description);
     setActiveSuggestion(s.title);
+    setSliderDriven(true);
     if (s.presets && sliders) {
       setSliderValues(s.presets);
     }
   };
 
-  const handleSliderChange = (label: string, val: number) => {
-    setSliderValues((prev) => ({ ...prev, [label]: val }));
+  const handleSliderChange = (sliderLabel: string, val: number) => {
+    const next = { ...sliderValues, [sliderLabel]: val };
+    setSliderValues(next);
     setActiveSuggestion(null);
+    setSliderDriven(true);
+    onChange(generateFromSliders(next));
   };
 
   return (
@@ -1029,13 +1104,23 @@ function PromptFieldWithSuggestions({
         </button>
       </div>
 
-      <textarea
-        placeholder={placeholder}
-        value={value}
-        onChange={(e) => { onChange(e.target.value); setActiveSuggestion(null); }}
-        rows={rows}
-        className="w-full px-4 py-3 bg-muted rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20 resize-none"
-      />
+      <div className="relative">
+        {sliderDriven && sliders && (
+          <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-0.5 bg-accent/10 rounded text-[10px] text-accent font-medium z-10">
+            <SlidersHorizontal className="w-3 h-3" />
+            Generated from sliders
+          </div>
+        )}
+        <textarea
+          placeholder={placeholder}
+          value={value}
+          onChange={(e) => { onChange(e.target.value); setActiveSuggestion(null); setSliderDriven(false); }}
+          rows={rows}
+          className={`w-full px-4 py-3 rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20 resize-none ${
+            sliderDriven && sliders ? "bg-accent/5 border border-accent/20" : "bg-muted"
+          }`}
+        />
+      </div>
       {maxLength && (
         <div className="text-right mt-1">
           <span className={`text-xs ${value.length > maxLength ? "text-danger" : "text-muted-foreground"}`}>

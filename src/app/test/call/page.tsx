@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { characters, models, uiOverlays } from "@/lib/mock-data";
 import {
-  ArrowLeft,
   Phone,
   PhoneOff,
   Mic,
@@ -51,13 +50,10 @@ export default function CallTestPage() {
   return (
     <div className="min-h-screen">
       <div className="border-b border-border bg-white sticky top-0 z-10">
-        <div className="px-8 py-4 flex items-center gap-4">
-          <Link href="/test" className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-          </Link>
+        <div className="px-4 sm:px-6 md:px-8 pt-6 pb-5 flex items-center justify-between">
           <div>
-            <h1 className="text-lg font-semibold text-foreground">Call Test</h1>
-            <p className="text-xs text-muted-foreground">Live call experience with character embodiment</p>
+            <h1 className="text-2xl font-semibold text-foreground">Call Test</h1>
+            <p className="text-sm text-muted-foreground mt-1">Live call experience with character embodiment</p>
           </div>
         </div>
       </div>

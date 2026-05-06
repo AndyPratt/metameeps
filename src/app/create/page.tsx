@@ -275,17 +275,12 @@ export default function CreatePage() {
   return (
     <div className="min-h-screen">
       <div className="border-b border-border bg-white sticky top-0 z-10">
-        <div className="px-4 sm:px-8 py-4 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-            <Link href="/characters" className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors shrink-0">
-              <ArrowLeft className="w-4 h-4" />
-            </Link>
-            <div className="min-w-0">
-              <h1 className="text-base sm:text-lg font-semibold text-foreground truncate">{form.name ? `Create ${form.name}` : "Create Character"}</h1>
-              <p className="text-xs text-muted-foreground truncate">
-                {stepLabels[step]}
-              </p>
-            </div>
+        <div className="px-4 sm:px-6 md:px-8 pt-6 flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-semibold text-foreground truncate">{form.name ? `Create ${form.name}` : "Create Character"}</h1>
+            <p className="text-sm text-muted-foreground mt-1 truncate">
+              Define your character&apos;s prompt, voice, and embodiment
+            </p>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {prevStep() && (
@@ -313,7 +308,7 @@ export default function CreatePage() {
             )}
           </div>
         </div>
-        <div className="px-4 sm:px-8">
+        <div className="px-4 sm:px-6 md:px-8">
           <div className="flex gap-0 overflow-x-auto">
             <button
               onClick={() => setStep("prompt")}

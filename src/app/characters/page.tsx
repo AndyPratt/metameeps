@@ -18,6 +18,9 @@ export default function CharactersPage() {
   const [search, setSearch] = useState("");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [filterProduct, setFilterProduct] = useState<string>("all");
+  const [filterOwner, setFilterOwner] = useState<"all" | "mine" | "team">("all");
+
+  const currentUser = "Andy Pratt";
 
   const filtered = characters.filter((c) => {
     const matchesSearch =
@@ -26,7 +29,11 @@ export default function CharactersPage() {
     const matchesProduct =
       filterProduct === "all" ||
       c.configurations.some((cfg) => cfg.product === filterProduct);
-    return matchesSearch && matchesProduct;
+    const matchesOwner =
+      filterOwner === "all" ||
+      (filterOwner === "mine" && c.createdBy === currentUser) ||
+      (filterOwner === "team" && c.createdBy !== currentUser);
+    return matchesSearch && matchesProduct && matchesOwner;
   });
 
   const allProducts = Array.from(
@@ -34,12 +41,12 @@ export default function CharactersPage() {
   );
 
   return (
-    <div className="p-4 sm:p-6 md:p-8 max-w-7xl">
+    <div className="px-4 sm:px-6 md:px-8 pt-6 max-w-7xl">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">My Characters</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {characters.length} characters across your team
+            {filtered.length} of {characters.length} characters
           </p>
         </div>
         <Link
@@ -49,6 +56,24 @@ export default function CharactersPage() {
           <Plus className="w-4 h-4" />
           New Character
         </Link>
+      </div>
+
+      <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5 w-fit mb-4">
+        {([
+          { id: "all" as const, label: "All" },
+          { id: "mine" as const, label: "My Characters" },
+          { id: "team" as const, label: "Team" },
+        ]).map((f) => (
+          <button
+            key={f.id}
+            onClick={() => setFilterOwner(f.id)}
+            className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+              filterOwner === f.id ? "bg-white shadow-sm text-foreground font-medium" : "text-muted-foreground"
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
       </div>
 
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">

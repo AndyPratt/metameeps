@@ -4,7 +4,6 @@ import { use, useState } from "react";
 import Link from "next/link";
 import { characters, voices, dialogueTests, callTestSessions, evalRuns } from "@/lib/mock-data";
 import {
-  ArrowLeft,
   Clock,
   User,
   Tag,
@@ -99,17 +98,13 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
 
       <div className={`border-b border-border bg-white sticky ${isPreviewingOld ? "top-[49px]" : "top-0"} z-10`}>
         <div className="px-4 sm:px-6 md:px-8 pt-6">
-          <Link href="/characters" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4">
-            <ArrowLeft className="w-4 h-4" />
-            My Characters
-          </Link>
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-5">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center text-2xl font-semibold text-accent">
                 {character.name[0]}
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-foreground">{character.name}</h1>
+                <h1 className="text-2xl font-semibold text-foreground">{character.name}</h1>
                 <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1"><User className="w-3.5 h-3.5" />{character.createdBy}</span>
                   <span className="flex items-center gap-1">

@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { characters, userPersonas, voices, dialogueTests } from "@/lib/mock-data";
 import {
-  ArrowLeft,
   Play,
   Plus,
   Flag,
@@ -29,15 +27,10 @@ export default function DialogueTestPage() {
   return (
     <div className="min-h-screen">
       <div className="border-b border-border bg-white sticky top-0 z-10">
-        <div className="px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/test" className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors">
-              <ArrowLeft className="w-4 h-4" />
-            </Link>
-            <div>
-              <h1 className="text-lg font-semibold text-foreground">Dialogue Test</h1>
-              <p className="text-xs text-muted-foreground">Generate and review synthetic conversations</p>
-            </div>
+        <div className="px-4 sm:px-6 md:px-8 pt-6 pb-5 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">Dialogue Test</h1>
+            <p className="text-sm text-muted-foreground mt-1">Generate and review synthetic conversations</p>
           </div>
           <button className="flex items-center gap-1.5 px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors">
             <MessageSquare className="w-4 h-4" />

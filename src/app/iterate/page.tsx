@@ -38,20 +38,25 @@ export default function IteratePage() {
   ];
 
   return (
-    <div className="p-4 sm:p-6 md:p-8 max-w-7xl">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl font-semibold text-foreground">Iterate</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Track improvements, compare versions, and refine characters based on eval data.
-          </p>
+    <div className="min-h-screen">
+      <div className="border-b border-border bg-white sticky top-0 z-10">
+        <div className="px-4 sm:px-6 md:px-8 pt-6 pb-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">Iterate</h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Track improvements, compare versions, and refine characters based on eval data.
+              </p>
+            </div>
+            <button className="flex items-center gap-1.5 px-4 py-2.5 bg-muted text-foreground rounded-lg text-sm hover:bg-border transition-colors">
+              <Download className="w-4 h-4" />
+              Pull Production Prompt
+            </button>
+          </div>
         </div>
-        <button className="flex items-center gap-1.5 px-4 py-2.5 bg-muted text-foreground rounded-lg text-sm hover:bg-border transition-colors">
-          <Download className="w-4 h-4" />
-          Pull Production Prompt
-        </button>
       </div>
 
+      <div className="px-4 sm:px-6 md:px-8 pt-6 max-w-7xl">
       <div className="mb-8">
         <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Character</label>
         <select
@@ -242,6 +247,7 @@ export default function IteratePage() {
           ))}
         </div>
       </section>
+      </div>
     </div>
   );
 }

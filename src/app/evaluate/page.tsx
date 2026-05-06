@@ -47,8 +47,8 @@ export default function EvaluatePage() {
   return (
     <div className="min-h-screen">
       <div className="border-b border-border bg-white sticky top-0 z-10">
-        <div className="px-8 pt-6">
-          <div className="flex items-center justify-between mb-5">
+        <div className="px-4 sm:px-6 md:px-8 pt-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
             <div>
               <h1 className="text-2xl font-semibold text-foreground">Evaluate</h1>
               <p className="text-sm text-muted-foreground mt-1">
@@ -91,17 +91,17 @@ export default function EvaluatePage() {
         </div>
       </div>
 
-      <div className="p-8 max-w-7xl">
+      <div className="p-4 sm:p-6 md:p-8 max-w-7xl">
         {activeTab === "evaluations" && (
           <>
-            <div className="grid grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <StatCard label="Total Evals" value={evalRuns.length} />
               <StatCard label="Pending" value={evalRuns.filter((e) => e.status === "pending").length} />
               <StatCard label="In Progress" value={evalRuns.filter((e) => e.status === "in_progress").length} />
               <StatCard label="Complete" value={evalRuns.filter((e) => e.status === "complete").length} />
             </div>
 
-            <div className="flex items-center gap-2 mb-6">
+            <div className="flex items-center gap-2 mb-6 flex-wrap">
               {(["all", "pending", "in_progress", "complete"] as const).map((f) => (
                 <button
                   key={f}
@@ -148,8 +148,8 @@ export default function EvaluatePage() {
                     </div>
 
                     {evalRun.status === "complete" && rubric && (
-                      <div className="bg-muted rounded-xl p-4">
-                        <div className="grid grid-cols-5 gap-3">
+                      <div className="bg-muted rounded-xl p-4 overflow-x-auto">
+                        <div className="grid grid-cols-5 gap-3 min-w-[500px]">
                           {rubric.criteria.map((criterion) => {
                             const llm = evalRun.llmScores[criterion.id];
                             const human = evalRun.humanScores[criterion.id];
@@ -181,12 +181,12 @@ export default function EvaluatePage() {
                     )}
 
                     {evalRun.status === "in_progress" && rubric && (
-                      <div className="bg-muted rounded-xl p-4">
+                      <div className="bg-muted rounded-xl p-4 overflow-x-auto">
                         <div className="flex items-center gap-2 mb-3">
                           <AlertCircle className="w-4 h-4 text-warning" />
                           <p className="text-xs text-foreground font-medium">LLM scoring complete — awaiting human review</p>
                         </div>
-                        <div className="grid grid-cols-5 gap-3">
+                        <div className="grid grid-cols-5 gap-3 min-w-[500px]">
                           {rubric.criteria.map((criterion) => {
                             const llm = evalRun.llmScores[criterion.id];
                             return (
@@ -272,7 +272,7 @@ export default function EvaluatePage() {
             {showNewRubricForm && (
               <div className="border border-accent/30 rounded-xl p-6 mb-6 bg-accent-light/30">
                 <h3 className="text-sm font-semibold text-foreground mb-4">Create New Rubric</h3>
-                <div className="grid grid-cols-3 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                   <div>
                     <label className="block text-xs font-medium text-muted-foreground mb-1.5">Rubric Name</label>
                     <input

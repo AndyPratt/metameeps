@@ -10,6 +10,7 @@ import {
   Sparkles,
   PanelLeftClose,
   PanelLeftOpen,
+  X,
 } from "lucide-react";
 import { useSidebar } from "./shell";
 
@@ -22,13 +23,19 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { collapsed, setCollapsed } = useSidebar();
+  const { collapsed, setCollapsed, mobileOpen, setMobileOpen } = useSidebar();
+
+  // On mobile: show/hide via mobileOpen; always expanded (not collapsed)
+  // On desktop: always visible, collapsible
+  const isMobileVisible = mobileOpen;
 
   return (
     <aside
-      className={`fixed left-0 top-0 bottom-0 bg-white border-r border-border flex flex-col z-40 transition-all duration-200 ${
-        collapsed ? "w-[64px]" : "w-[240px]"
-      }`}
+      className={`fixed left-0 top-0 bottom-0 bg-white border-r border-border flex flex-col z-40 transition-all duration-200
+        ${collapsed ? "w-[64px]" : "w-[240px]"}
+        ${isMobileVisible ? "translate-x-0" : "-translate-x-full"}
+        md:translate-x-0
+      `}
     >
       <div className={`border-b border-border flex items-center ${collapsed ? "p-3 justify-center" : "p-5 justify-between"}`}>
         {collapsed ? (
@@ -36,7 +43,7 @@ export function Sidebar() {
             <Sparkles className="w-4.5 h-4.5 text-white" />
           </button>
         ) : (
-          <Link href="/characters" className="flex items-center gap-2.5">
+          <Link href="/characters" className="flex items-center gap-2.5" onClick={() => setMobileOpen(false)}>
             <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center shrink-0">
               <Sparkles className="w-4.5 h-4.5 text-white" />
             </div>
@@ -47,12 +54,22 @@ export function Sidebar() {
           </Link>
         )}
         {!collapsed && (
-          <button
-            onClick={() => setCollapsed(true)}
-            className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          >
-            <PanelLeftClose className="w-4 h-4" />
-          </button>
+          <>
+            {/* Desktop: collapse button */}
+            <button
+              onClick={() => setCollapsed(true)}
+              className="hidden md:block p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            >
+              <PanelLeftClose className="w-4 h-4" />
+            </button>
+            {/* Mobile: close button */}
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="md:hidden p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </>
         )}
       </div>
 
@@ -67,6 +84,7 @@ export function Sidebar() {
                 key={item.href}
                 href={item.href}
                 title={collapsed ? item.label : undefined}
+                onClick={() => setMobileOpen(false)}
                 className={`flex items-center rounded-lg text-sm transition-colors ${
                   collapsed ? "justify-center px-0 py-2.5" : "gap-3 px-3 py-2.5"
                 } ${

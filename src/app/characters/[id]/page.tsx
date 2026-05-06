@@ -71,7 +71,7 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
     <div className="min-h-screen">
       {/* Preview banner */}
       {isPreviewingOld && (
-        <div className="bg-warning/10 border-b border-warning/20 px-8 py-3 flex items-center justify-between sticky top-0 z-20">
+        <div className="bg-warning/10 border-b border-warning/20 px-4 sm:px-8 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sticky top-0 z-20">
           <div className="flex items-center gap-2">
             <Eye className="w-4 h-4 text-warning" />
             <p className="text-sm text-foreground">
@@ -97,12 +97,12 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
       )}
 
       <div className={`border-b border-border bg-white sticky ${isPreviewingOld ? "top-[49px]" : "top-0"} z-10`}>
-        <div className="px-8 pt-6">
+        <div className="px-4 sm:px-6 md:px-8 pt-6">
           <Link href="/characters" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4">
             <ArrowLeft className="w-4 h-4" />
             My Characters
           </Link>
-          <div className="flex items-start justify-between mb-5">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-5">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center text-2xl font-semibold text-accent">
                 {character.name[0]}
@@ -119,7 +119,7 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               {hasEdits && !isPreviewingOld && (
                 <button
                   onClick={() => setShowSaveModal(true)}
@@ -149,7 +149,7 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
               )}
             </div>
           </div>
-          <div className="flex gap-0">
+          <div className="flex gap-0 overflow-x-auto">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -167,10 +167,10 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
         </div>
       </div>
 
-      <div className="p-8 max-w-5xl">
+      <div className="p-4 sm:p-6 md:p-8 max-w-5xl">
         {activeTab === "overview" && (
-          <div className="grid grid-cols-3 gap-8">
-            <div className="col-span-2 space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-6">
               {config ? (
                 <div className="flex items-center gap-3 pb-4 border-b border-border">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-accent/10 rounded-lg text-sm font-medium text-accent">
@@ -263,7 +263,7 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
                 </div>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-5">{scene.description}</p>
 
-                <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                   <div className="border border-border rounded-xl p-4">
                     <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1">Format</p>
                     <p className="text-sm font-medium text-foreground">{scene.format}</p>

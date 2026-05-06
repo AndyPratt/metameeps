@@ -46,8 +46,8 @@ export default function DialogueTestPage() {
         </div>
       </div>
 
-      <div className="flex">
-        <div className="w-[320px] border-r border-border p-6 space-y-6 sticky top-[73px] self-start max-h-[calc(100vh-73px)] overflow-y-auto">
+      <div className="flex flex-col md:flex-row">
+        <div className="w-full md:w-[320px] border-b md:border-b-0 md:border-r border-border p-4 sm:p-6 space-y-6 md:sticky md:top-[73px] md:self-start md:max-h-[calc(100vh-73px)] md:overflow-y-auto">
           <div>
             <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Character</label>
             <select
@@ -127,7 +127,7 @@ export default function DialogueTestPage() {
           </div>
         </div>
 
-        <div className="flex-1 p-8">
+        <div className="flex-1 p-4 sm:p-6 md:p-8">
           {sampleTest && (
             <div>
               <div className="flex items-center justify-between mb-6">

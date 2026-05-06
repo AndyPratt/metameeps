@@ -62,10 +62,10 @@ export default function CallTestPage() {
         </div>
       </div>
 
-      <div className="flex">
+      <div className="flex flex-col md:flex-row">
         {callState === "settings" && (
           <>
-            <div className="w-[380px] border-r border-border p-6 space-y-5 sticky top-[73px] self-start max-h-[calc(100vh-73px)] overflow-y-auto">
+            <div className="w-full md:w-[380px] border-b md:border-b-0 md:border-r border-border p-4 sm:p-6 space-y-5 md:sticky md:top-[73px] md:self-start md:max-h-[calc(100vh-73px)] md:overflow-y-auto">
               <div>
                 <h2 className="text-sm font-semibold text-foreground mb-4">Session Configuration</h2>
 
@@ -267,7 +267,7 @@ export default function CallTestPage() {
         )}
 
         {callState === "ended" && (
-          <div className="flex-1 p-8 max-w-3xl">
+          <div className="flex-1 p-4 sm:p-6 md:p-8 max-w-3xl">
             <div className="mb-6">
               <h2 className="text-lg font-semibold text-foreground mb-1">Call Summary</h2>
               <p className="text-sm text-muted-foreground">

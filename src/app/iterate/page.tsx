@@ -38,8 +38,8 @@ export default function IteratePage() {
   ];
 
   return (
-    <div className="p-8 max-w-7xl">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4 sm:p-6 md:p-8 max-w-7xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Iterate</h1>
           <p className="text-sm text-muted-foreground mt-1">
@@ -67,8 +67,8 @@ export default function IteratePage() {
 
       <section className="mb-10">
         <h2 className="text-base font-semibold text-foreground mb-4">Version Performance</h2>
-        <div className="border border-border rounded-xl overflow-hidden">
-          <table className="w-full">
+        <div className="border border-border rounded-xl overflow-x-auto">
+          <table className="w-full min-w-[700px]">
             <thead>
               <tr className="bg-muted text-left">
                 <th className="px-5 py-3 text-xs font-medium text-muted-foreground">Version</th>
@@ -137,7 +137,7 @@ export default function IteratePage() {
           <h2 className="text-base font-semibold text-foreground">Side-by-Side Comparison</h2>
         </div>
         <div className="border border-border rounded-xl p-6">
-          <div className="grid grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
             <div>
               <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Version A</label>
               <select className="w-full px-3 py-2.5 bg-muted rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20">
@@ -156,7 +156,7 @@ export default function IteratePage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="bg-muted rounded-xl p-4">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-medium text-muted-foreground">v1 Scores</span>

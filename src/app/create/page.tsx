@@ -275,19 +275,19 @@ export default function CreatePage() {
   return (
     <div className="min-h-screen">
       <div className="border-b border-border bg-white sticky top-0 z-10">
-        <div className="px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/characters" className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors">
+        <div className="px-4 sm:px-8 py-4 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+            <Link href="/characters" className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors shrink-0">
               <ArrowLeft className="w-4 h-4" />
             </Link>
-            <div>
-              <h1 className="text-lg font-semibold text-foreground">{form.name ? `Create ${form.name}` : "Create Character"}</h1>
-              <p className="text-xs text-muted-foreground">
+            <div className="min-w-0">
+              <h1 className="text-base sm:text-lg font-semibold text-foreground truncate">{form.name ? `Create ${form.name}` : "Create Character"}</h1>
+              <p className="text-xs text-muted-foreground truncate">
                 {stepLabels[step]}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {prevStep() && (
               <button
                 onClick={() => setStep(prevStep()!)}
@@ -313,8 +313,8 @@ export default function CreatePage() {
             )}
           </div>
         </div>
-        <div className="px-8">
-          <div className="flex gap-0">
+        <div className="px-4 sm:px-8">
+          <div className="flex gap-0 overflow-x-auto">
             <button
               onClick={() => setStep("prompt")}
               className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
@@ -346,10 +346,10 @@ export default function CreatePage() {
       </div>
 
       {step === "prompt" && (
-        <div className="flex">
-          <div className="flex-1 p-8 max-w-2xl">
+        <div className="flex flex-col lg:flex-row">
+          <div className="flex-1 p-4 sm:p-6 md:p-8 max-w-2xl">
             <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Field label="App">
                   <select
                     value={form.product}
@@ -469,11 +469,11 @@ export default function CreatePage() {
       )}
 
       {step === "voice-embodiment" && (
-        <div className="p-8 max-w-4xl space-y-10">
+        <div className="p-4 sm:p-6 md:p-8 max-w-4xl space-y-10">
           <section>
             <h2 className="text-base font-semibold text-foreground mb-1">Voice Selection</h2>
             <p className="text-sm text-muted-foreground mb-4">Choose a voice from Play.ai or upload a voice sample.</p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {voices.map((v) => (
                 <button
                   key={v.id}
@@ -552,7 +552,7 @@ export default function CreatePage() {
                     Generate
                   </button>
                 </div>
-                <div className="grid grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {Array.from({ length: imageVariations }).map((_, i) => (
                     <div key={i} className="aspect-square bg-muted rounded-xl border-2 border-dashed border-border flex items-center justify-center hover:border-accent/30 transition-colors cursor-pointer">
                       <ImageIcon className="w-8 h-8 text-muted-foreground/30" />
@@ -657,7 +657,7 @@ export default function CreatePage() {
       )}
 
       {step === "scenes" && (
-        <div className="p-8 max-w-4xl">
+        <div className="p-4 sm:p-6 md:p-8 max-w-4xl">
           <div className="flex items-center justify-between mb-6">
             <div>
               <p className="text-sm text-muted-foreground">
@@ -759,7 +759,7 @@ export default function CreatePage() {
                         )}
                       </div>
 
-                      <div className="grid grid-cols-2 gap-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
                           <label className="block text-sm font-semibold text-foreground mb-2">Format</label>
                           <select
@@ -845,7 +845,7 @@ export default function CreatePage() {
                                   <label className="block text-xs text-accent font-medium mb-1">Content</label>
                                   <textarea placeholder="<Describe the arc of the story>" value={chapter.content} onChange={(e) => updateChapterInScene(scene.id, chapter.id, { content: e.target.value })} rows={3} className="w-full px-3 py-2.5 bg-white border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20 resize-none" />
                                 </div>
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                   <div>
                                     <label className="block text-xs text-accent font-medium mb-1">Turn Taking Rules</label>
                                     <textarea placeholder="<e.g. the characters must take turns>" value={chapter.turnTakingRules} onChange={(e) => updateChapterInScene(scene.id, chapter.id, { turnTakingRules: e.target.value })} rows={2} className="w-full px-3 py-2.5 bg-white border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20 resize-none" />
@@ -1012,7 +1012,7 @@ function CreateSidebarPreview({ form }: { form: Record<string, string> }) {
   const newSections = prompt.split("\n\n");
 
   return (
-    <div className="w-[360px] border-l border-border sticky top-[120px] self-start flex flex-col max-h-[calc(100vh-120px)]">
+    <div className="w-full lg:w-[360px] border-t lg:border-t-0 lg:border-l border-border lg:sticky lg:top-[120px] lg:self-start flex flex-col lg:max-h-[calc(100vh-120px)]">
       <div className="px-5 py-3 border-b border-border shrink-0">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
@@ -1475,9 +1475,9 @@ function PromptFieldWithSuggestions({
       {expanded && (
         <div className="mt-3 border border-border rounded-xl overflow-hidden">
           {sliders ? (
-            <div className="flex">
+            <div className="flex flex-col sm:flex-row">
               {/* Suggestions — left column */}
-              <div className="flex-1 p-4 border-r border-border">
+              <div className="flex-1 p-4 border-b sm:border-b-0 sm:border-r border-border">
                 <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-3">Presets</p>
                 <div className="space-y-2.5">
                   {suggestions.map((s) => (
@@ -1498,7 +1498,7 @@ function PromptFieldWithSuggestions({
               </div>
 
               {/* Sliders — right column */}
-              <div className="w-[280px] p-4 bg-muted/30">
+              <div className="w-full sm:w-[280px] p-4 bg-muted/30">
                 <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-4">Fine-tune</p>
                 <div className="space-y-5">
                   {sliders.map((slider) => (
@@ -1526,7 +1526,7 @@ function PromptFieldWithSuggestions({
           ) : (
             /* Suggestions only — no sliders (Goal, Biography) */
             <div className="p-4">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {suggestions.map((s) => (
                   <button
                     key={s.title}

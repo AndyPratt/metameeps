@@ -49,8 +49,8 @@ export default function TestPage() {
   return (
     <div className="min-h-screen">
       <div className="border-b border-border bg-white sticky top-0 z-10">
-        <div className="px-8 pt-6">
-          <div className="flex items-center justify-between mb-5">
+        <div className="px-4 sm:px-6 md:px-8 pt-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
             <div>
               <h1 className="text-2xl font-semibold text-foreground">Test</h1>
               <p className="text-sm text-muted-foreground mt-1">
@@ -99,10 +99,10 @@ export default function TestPage() {
         </div>
       </div>
 
-      <div className="p-8 max-w-7xl">
+      <div className="p-4 sm:p-6 md:p-8 max-w-7xl">
         {activeTab === "overview" && (
           <>
-            <div className="grid grid-cols-2 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-8">
               <StatCard icon={MessageSquare} label="Dialogue Tests" value={dialogueTests.length} />
               <StatCard icon={Phone} label="Call Sessions" value={callTestSessions.length} />
             </div>

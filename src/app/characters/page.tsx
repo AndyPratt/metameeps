@@ -19,6 +19,7 @@ export default function CharactersPage() {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [filterProduct, setFilterProduct] = useState<string>("all");
   const [filterOwner, setFilterOwner] = useState<"all" | "mine" | "team">("all");
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const currentUser = "Andy Pratt";
 
@@ -58,45 +59,60 @@ export default function CharactersPage() {
         </Link>
       </div>
 
-      <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5 w-fit mb-4">
-        {([
-          { id: "all" as const, label: "All" },
-          { id: "mine" as const, label: "My Characters" },
-          { id: "team" as const, label: "Team" },
-        ]).map((f) => (
-          <button
-            key={f.id}
-            onClick={() => setFilterOwner(f.id)}
-            className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
-              filterOwner === f.id ? "bg-white shadow-sm text-foreground font-medium" : "text-muted-foreground"
-            }`}
-          >
-            {f.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">
-        <div className="relative flex-1 sm:max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Search characters..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-muted rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20"
-          />
+      <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
+          {([
+            { id: "all" as const, label: "All" },
+            { id: "mine" as const, label: "My Characters" },
+            { id: "team" as const, label: "Team" },
+          ]).map((f) => (
+            <button
+              key={f.id}
+              onClick={() => setFilterOwner(f.id)}
+              className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+                filterOwner === f.id ? "bg-white shadow-sm text-foreground font-medium" : "text-muted-foreground"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
         </div>
+
+        <div className="flex-1" />
+
+        {searchOpen ? (
+          <div className="relative w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search characters..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onBlur={() => { if (!search) setSearchOpen(false); }}
+              autoFocus
+              className="w-full pl-10 pr-4 py-2 bg-muted rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20"
+            />
+          </div>
+        ) : (
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
+          >
+            <Search className="w-4 h-4" />
+          </button>
+        )}
+
         <select
           value={filterProduct}
           onChange={(e) => setFilterProduct(e.target.value)}
-          className="px-3 py-2.5 bg-muted rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20"
+          className="px-3 py-2 bg-muted rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20"
         >
           <option value="all">All Products</option>
           {allProducts.map((p) => (
             <option key={p} value={p}>{p}</option>
           ))}
         </select>
+
         <div className="flex items-center bg-muted rounded-lg p-0.5">
           <button
             onClick={() => setView("grid")}

@@ -279,7 +279,7 @@ export default function CreatePage() {
               <ArrowLeft className="w-4 h-4" />
             </Link>
             <div>
-              <h1 className="text-lg font-semibold text-foreground">Create Character</h1>
+              <h1 className="text-lg font-semibold text-foreground">{form.name ? `Create ${form.name}` : "Create Character"}</h1>
               <p className="text-xs text-muted-foreground">
                 {stepLabels[step]}
               </p>
@@ -298,7 +298,7 @@ export default function CreatePage() {
             {isLastStep ? (
               <button className="flex items-center gap-1.5 px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors">
                 <Check className="w-4 h-4" />
-                Create Character
+                {form.name ? `Create ${form.name}` : "Create Character"}
               </button>
             ) : (
               <button
@@ -347,16 +347,6 @@ export default function CreatePage() {
         <div className="flex">
           <div className="flex-1 p-8 max-w-2xl">
             <div className="space-y-6">
-              <Field label="Name" helper="Give your character a memorable name.">
-                <input
-                  type="text"
-                  placeholder="e.g., Zara, Professor Wick, Chef Amara"
-                  value={form.name}
-                  onChange={(e) => updateForm("name", e.target.value)}
-                  className="w-full px-4 py-3 bg-muted rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20"
-                />
-              </Field>
-
               <div className="grid grid-cols-2 gap-4">
                 <Field label="App">
                   <select
@@ -379,6 +369,16 @@ export default function CreatePage() {
                   </select>
                 </Field>
               </div>
+
+              <Field label="Name" helper="Give your character a memorable name.">
+                <input
+                  type="text"
+                  placeholder="e.g., Zara, Professor Wick, Chef Amara"
+                  value={form.name}
+                  onChange={(e) => updateForm("name", e.target.value)}
+                  className="w-full px-4 py-3 bg-muted rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20"
+                />
+              </Field>
 
               {form.platform === "1P Characters" ? (
                 <>
@@ -943,6 +943,7 @@ function CreateSidebarPreview({ form }: { form: Record<string, string> }) {
   const is1P = form.platform === "1P Characters";
 
   const sections = is1P ? [
+    form.name && `# Name\n${form.name}`,
     form.purpose && `# Purpose\n${form.purpose}`,
     form.identity && `# Identity\n${form.identity}`,
     form.welcomeMessage && `# Welcome Message\n${form.welcomeMessage}`,
@@ -959,6 +960,7 @@ function CreateSidebarPreview({ form }: { form: Record<string, string> }) {
     form.quirks && `# Quirks\n${form.quirks}`,
     form.freeform && `# Freeform\n${form.freeform}`,
   ].filter(Boolean) : [
+    form.name && `# Name\n${form.name}`,
     form.identity && `# Identity\n${form.identity}`,
     form.personality && `# Personality\n${form.personality}`,
     form.communicationStyle && `# Communication Style\n${form.communicationStyle}`,

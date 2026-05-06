@@ -27,6 +27,7 @@ import {
   ChevronRight,
   Copy,
   FileText,
+  Mountain,
 } from "lucide-react";
 
 export default function CharacterDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -540,10 +541,8 @@ function EmbodimentUploader({ type }: { type: "character" | "scene" }) {
 function VoiceEmbodimentTab({ character, voices: allVoices }: { character: typeof import("@/lib/mock-data").characters[number]; voices: typeof import("@/lib/mock-data").voices }) {
   const [editingVoice, setEditingVoice] = useState(false);
   const [editingImage, setEditingImage] = useState(false);
-  const [editingScene, setEditingScene] = useState(false);
   const currentVoice = allVoices.find((v) => v.id === character.voiceId);
   const hasImage = character.characterImage !== null;
-  const hasScene = character.scene !== null;
 
   return (
     <div className="space-y-8">
@@ -611,81 +610,57 @@ function VoiceEmbodimentTab({ character, voices: allVoices }: { character: typeo
         )}
       </div>
 
-      {/* Character Image */}
+      {/* Appearance */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Character Image</h3>
+          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Appearance</h3>
           <button
             onClick={() => setEditingImage(!editingImage)}
             className="text-xs text-accent hover:underline"
           >
-            {editingImage ? "Done" : hasImage ? "Change image" : "Add image"}
+            {editingImage ? "Done" : "Edit appearance"}
           </button>
         </div>
 
         {!editingImage ? (
-          hasImage ? (
-            <div className="border border-border rounded-xl p-4 flex items-center gap-4">
-              <div className="w-20 h-20 rounded-lg bg-muted flex items-center justify-center">
-                <ImageIcon className="w-8 h-8 text-muted-foreground/40" />
+          <div className="space-y-4">
+            <div className="border border-border rounded-xl overflow-hidden">
+              <div className="aspect-[4/3] bg-muted flex items-center justify-center">
+                <div className="text-center">
+                  <ImageIcon className="w-10 h-10 text-muted-foreground/20 mx-auto mb-2" />
+                  <p className="text-xs text-muted-foreground">{hasImage ? "Character appearance" : "No appearance set"}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-medium text-foreground">Character image uploaded</p>
-                <p className="text-xs text-muted-foreground">PNG &middot; 1024x1024</p>
-              </div>
-            </div>
-          ) : (
-            <div className="border border-border rounded-xl p-5 flex items-center gap-4">
-              <div className="w-14 h-14 rounded-lg bg-muted flex items-center justify-center">
-                <ImageIcon className="w-6 h-6 text-muted-foreground/30" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">No character image yet</p>
-                <p className="text-xs text-muted-foreground">Add an image via create, extract, or upload</p>
+              <div className="px-4 py-3 border-t border-border">
+                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <span>Look: <span className="text-foreground font-medium">Casual</span></span>
+                  <span>Background: <span className="text-foreground font-medium">Cozy Living Room</span></span>
+                </div>
               </div>
             </div>
-          )
+            <div>
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Looks</p>
+              <div className="flex gap-2">
+                {["Casual", "Professional", "Sporty"].map((look, i) => (
+                  <div key={look} className={`w-14 h-14 rounded-lg bg-muted flex items-center justify-center text-[10px] font-medium cursor-pointer transition-colors ${i === 0 ? "border-2 border-accent text-accent" : "border border-border text-muted-foreground hover:border-accent/30"}`}>
+                    {look.slice(0, 3)}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Backgrounds</p>
+              <div className="flex gap-2">
+                {["Living Room", "Coffee Shop", "City Park"].map((bg, i) => (
+                  <div key={bg} className={`w-20 h-12 rounded-lg bg-muted flex items-center justify-center cursor-pointer transition-colors ${i === 0 ? "border-2 border-accent" : "border border-border hover:border-accent/30"}`}>
+                    <Mountain className="w-4 h-4 text-muted-foreground/30" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         ) : (
           <EmbodimentUploader type="character" />
-        )}
-      </div>
-
-      {/* Background Scene */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Background Scene</h3>
-          <button
-            onClick={() => setEditingScene(!editingScene)}
-            className="text-xs text-accent hover:underline"
-          >
-            {editingScene ? "Done" : hasScene ? "Change scene" : "Add scene"}
-          </button>
-        </div>
-
-        {!editingScene ? (
-          hasScene ? (
-            <div className="border border-border rounded-xl p-4 flex items-center gap-4">
-              <div className="w-20 h-14 rounded-lg bg-muted flex items-center justify-center">
-                <ImageIcon className="w-6 h-6 text-muted-foreground/40" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-foreground">Background scene uploaded</p>
-                <p className="text-xs text-muted-foreground">PNG &middot; 1920x1080</p>
-              </div>
-            </div>
-          ) : (
-            <div className="border border-border rounded-xl p-5 flex items-center gap-4">
-              <div className="w-14 h-10 rounded-lg bg-muted flex items-center justify-center">
-                <ImageIcon className="w-5 h-5 text-muted-foreground/30" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">No background scene</p>
-                <p className="text-xs text-muted-foreground">Optional — add a visual background for embodiment</p>
-              </div>
-            </div>
-          )
-        ) : (
-          <EmbodimentUploader type="scene" />
         )}
       </div>
     </div>

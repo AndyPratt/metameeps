@@ -495,151 +495,147 @@ export default function CreatePage() {
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-foreground mb-1">Character Image</h2>
-            <p className="text-sm text-muted-foreground mb-4">Create, extract, or upload a character image for embodiment.</p>
+            <h2 className="text-base font-semibold text-foreground mb-1">Appearance</h2>
+            <p className="text-sm text-muted-foreground mb-6">Define how your character looks — including outfits, style, and backgrounds. The character stays consistent while their look and setting can change.</p>
 
-            <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5 w-fit mb-5">
-              {(["create", "extract", "upload"] as const).map((m) => (
-                <button
-                  key={m}
-                  onClick={() => setImageMode(m)}
-                  className={`px-4 py-2 rounded-md text-sm capitalize transition-colors ${
-                    imageMode === m ? "bg-white shadow-sm text-foreground font-medium" : "text-muted-foreground"
-                  }`}
-                >
-                  {m}
-                </button>
-              ))}
-            </div>
-
-            {imageMode === "create" && (
-              <div className="space-y-4">
-                <textarea
-                  placeholder="Describe the character you want to generate... e.g., 'A warm, approachable woman in her 30s with curly auburn hair and kind brown eyes, wearing a casual blazer'"
-                  className="w-full h-28 px-4 py-3 bg-muted rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20 resize-none"
-                />
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-muted-foreground">Variations:</span>
-                    <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
-                      {[1, 2, 4].map((n) => (
-                        <button
-                          key={n}
-                          onClick={() => setImageVariations(n)}
-                          className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
-                            imageVariations === n ? "bg-white shadow-sm text-foreground font-medium" : "text-muted-foreground"
-                          }`}
-                        >
-                          {n}
-                        </button>
+            <div className="space-y-8">
+              {/* Character Base */}
+              <div>
+                <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Character Base</h3>
+                <p className="text-xs text-muted-foreground mb-3">The core look of your character — face, body, and defining visual features.</p>
+                <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5 w-fit mb-4">
+                  {(["create", "extract", "upload"] as const).map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => setImageMode(m)}
+                      className={`px-4 py-2 rounded-md text-sm capitalize transition-colors ${
+                        imageMode === m ? "bg-white shadow-sm text-foreground font-medium" : "text-muted-foreground"
+                      }`}
+                    >
+                      {m}
+                    </button>
+                  ))}
+                </div>
+                {imageMode === "create" && (
+                  <div className="space-y-4">
+                    <textarea placeholder="Describe the character's base appearance... e.g., 'A warm, approachable woman in her 30s with curly auburn hair and kind brown eyes'" className="w-full h-24 px-4 py-3 bg-muted rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20 resize-none" />
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-muted-foreground">Variations:</span>
+                        <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
+                          {[1, 2, 4].map((n) => (
+                            <button key={n} onClick={() => setImageVariations(n)} className={`px-3 py-1.5 rounded-md text-sm transition-colors ${imageVariations === n ? "bg-white shadow-sm text-foreground font-medium" : "text-muted-foreground"}`}>{n}</button>
+                          ))}
+                        </div>
+                      </div>
+                      <button className="flex items-center gap-1.5 px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors">
+                        <Sparkles className="w-4 h-4" /> Generate
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {Array.from({ length: imageVariations }).map((_, i) => (
+                        <div key={i} className="aspect-square bg-muted rounded-xl border-2 border-dashed border-border flex items-center justify-center hover:border-accent/30 transition-colors cursor-pointer">
+                          <ImageIcon className="w-8 h-8 text-muted-foreground/30" />
+                        </div>
                       ))}
                     </div>
                   </div>
-                  <button className="flex items-center gap-1.5 px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors">
-                    <Sparkles className="w-4 h-4" />
-                    Generate
+                )}
+                {imageMode === "extract" && (
+                  <div className="space-y-4">
+                    <div className="flex gap-3">
+                      <input type="text" placeholder="Paste a Meta AI vibe URL..." className="flex-1 px-4 py-3 bg-muted rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20" />
+                      <button className="flex items-center gap-1.5 px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors shrink-0">
+                        <ExternalLink className="w-4 h-4" /> Extract
+                      </button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">The model will extract the character from the vibe.</p>
+                  </div>
+                )}
+                {imageMode === "upload" && (
+                  <div className="border-2 border-dashed border-border rounded-xl p-12 text-center hover:border-accent/30 transition-colors cursor-pointer">
+                    <ImageIcon className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                    <p className="text-sm font-medium text-foreground mb-1">Drop character image here</p>
+                    <p className="text-xs text-muted-foreground">PNG, JPG, or WebP up to 10MB</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Outfits / Looks */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Outfits & Looks</h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">Different styles and outfits for the same character.</p>
+                  </div>
+                  <button className="flex items-center gap-1 px-3 py-1.5 bg-accent text-white rounded-lg text-xs font-medium hover:bg-accent/90 transition-colors">
+                    <Plus className="w-3.5 h-3.5" /> Add Look
                   </button>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {Array.from({ length: imageVariations }).map((_, i) => (
-                    <div key={i} className="aspect-square bg-muted rounded-xl border-2 border-dashed border-border flex items-center justify-center hover:border-accent/30 transition-colors cursor-pointer">
-                      <ImageIcon className="w-8 h-8 text-muted-foreground/30" />
+                  {["Casual", "Professional", "Sporty"].map((look) => (
+                    <div key={look} className="border border-border rounded-xl overflow-hidden hover:border-accent/30 transition-colors cursor-pointer group">
+                      <div className="aspect-square bg-muted flex items-center justify-center">
+                        <ImageIcon className="w-8 h-8 text-muted-foreground/20" />
+                      </div>
+                      <div className="px-3 py-2 border-t border-border">
+                        <p className="text-xs font-medium text-foreground group-hover:text-accent transition-colors">{look}</p>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="border-2 border-dashed border-border rounded-xl flex items-center justify-center aspect-square hover:border-accent/30 transition-colors cursor-pointer">
+                    <div className="text-center">
+                      <Plus className="w-6 h-6 text-muted-foreground/30 mx-auto mb-1" />
+                      <p className="text-[10px] text-muted-foreground">Add look</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Backgrounds */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Backgrounds</h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">Environments and settings behind the character.</p>
+                  </div>
+                  <button className="flex items-center gap-1 px-3 py-1.5 bg-accent text-white rounded-lg text-xs font-medium hover:bg-accent/90 transition-colors">
+                    <Plus className="w-3.5 h-3.5" /> Add Background
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {["Cozy Living Room", "Coffee Shop", "City Park", "Studio"].map((bg) => (
+                    <div key={bg} className="border border-border rounded-xl overflow-hidden hover:border-accent/30 transition-colors cursor-pointer group">
+                      <div className="aspect-video bg-muted flex items-center justify-center">
+                        <Mountain className="w-6 h-6 text-muted-foreground/20" />
+                      </div>
+                      <div className="px-3 py-2 border-t border-border">
+                        <p className="text-xs font-medium text-foreground group-hover:text-accent transition-colors">{bg}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
-            )}
 
-            {imageMode === "extract" && (
-              <div className="space-y-4">
-                <div className="flex gap-3">
-                  <input
-                    type="text"
-                    placeholder="Paste a Meta AI vibe URL... e.g., meta.ai/@user/post/..."
-                    className="flex-1 px-4 py-3 bg-muted rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20"
-                  />
-                  <button className="flex items-center gap-1.5 px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors shrink-0">
-                    <ExternalLink className="w-4 h-4" />
-                    Extract
-                  </button>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  The model will automatically separate the character from the background scene.
-                </p>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="border border-dashed border-border rounded-xl p-8 text-center">
-                    <ImageIcon className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
-                    <p className="text-xs text-muted-foreground">Extracted character</p>
+              {/* Combined Preview */}
+              <div>
+                <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Appearance Preview</h3>
+                <p className="text-xs text-muted-foreground mb-3">See how the character, outfit, and background combine.</p>
+                <div className="border border-border rounded-xl overflow-hidden">
+                  <div className="aspect-[4/3] bg-muted flex items-center justify-center">
+                    <div className="text-center">
+                      <ImageIcon className="w-12 h-12 text-muted-foreground/15 mx-auto mb-2" />
+                      <p className="text-xs text-muted-foreground">Select a character, look, and background to preview</p>
+                    </div>
                   </div>
-                  <div className="border border-dashed border-border rounded-xl p-8 text-center">
-                    <Clapperboard className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
-                    <p className="text-xs text-muted-foreground">Extracted scene</p>
+                  <div className="px-4 py-3 border-t border-border flex items-center gap-4 text-xs text-muted-foreground">
+                    <span>Character: <span className="text-foreground font-medium">—</span></span>
+                    <span>Look: <span className="text-foreground font-medium">—</span></span>
+                    <span>Background: <span className="text-foreground font-medium">—</span></span>
                   </div>
                 </div>
               </div>
-            )}
-
-            {imageMode === "upload" && (
-              <div className="border-2 border-dashed border-border rounded-xl p-12 text-center hover:border-accent/30 transition-colors cursor-pointer">
-                <ImageIcon className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-sm font-medium text-foreground mb-1">Drop character image here</p>
-                <p className="text-xs text-muted-foreground">PNG, JPG, or WebP up to 10MB</p>
-              </div>
-            )}
-          </section>
-
-          <section>
-            <h2 className="text-base font-semibold text-foreground mb-1">Background Scene</h2>
-            <p className="text-sm text-muted-foreground mb-4">Optional visual background for the character&apos;s embodiment.</p>
-
-            <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5 w-fit mb-5">
-              {(["create", "extract", "upload"] as const).map((m) => (
-                <button
-                  key={m}
-                  onClick={() => setSceneMode(m)}
-                  className={`px-4 py-2 rounded-md text-sm capitalize transition-colors ${
-                    sceneMode === m ? "bg-white shadow-sm text-foreground font-medium" : "text-muted-foreground"
-                  }`}
-                >
-                  {m}
-                </button>
-              ))}
             </div>
-
-            {sceneMode === "create" && (
-              <div className="space-y-4">
-                <textarea
-                  placeholder="Describe the background scene... e.g., 'A cozy coffee shop with warm lighting, exposed brick walls, and plants hanging from the ceiling'"
-                  className="w-full h-24 px-4 py-3 bg-muted rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20 resize-none"
-                />
-                <button className="flex items-center gap-1.5 px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors">
-                  <Sparkles className="w-4 h-4" />
-                  Generate Scene
-                </button>
-              </div>
-            )}
-
-            {sceneMode === "extract" && (
-              <div className="space-y-3">
-                <input
-                  type="text"
-                  placeholder="Paste a Meta AI vibe URL..."
-                  className="w-full px-4 py-3 bg-muted rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20"
-                />
-                <button className="flex items-center gap-1.5 px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors">
-                  <ExternalLink className="w-4 h-4" />
-                  Extract Scene
-                </button>
-              </div>
-            )}
-
-            {sceneMode === "upload" && (
-              <div className="border-2 border-dashed border-border rounded-xl p-12 text-center hover:border-accent/30 transition-colors cursor-pointer">
-                <Mountain className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-sm font-medium text-foreground mb-1">Drop background scene here</p>
-                <p className="text-xs text-muted-foreground">PNG, JPG, or WebP up to 10MB</p>
-              </div>
-            )}
           </section>
         </div>
       )}

@@ -98,6 +98,16 @@ export default function CreatePage() {
     biography: "",
     product: "",
     platform: "",
+    purpose: "",
+    welcomeMessage: "",
+    backstory: "",
+    wants: "",
+    problems: "",
+    visualPresence: "",
+    freeform: "",
+    likes: "",
+    dislikes: "",
+    quirks: "",
   });
 
   const [scenes, setScenes] = useState<Scene[]>([createEmptyScene()]);
@@ -370,69 +380,85 @@ export default function CreatePage() {
                 </Field>
               </div>
 
-              <Field label="Identity" helper="Who is this character? What defines them?">
-                <textarea
-                  placeholder="A witty and empathetic life coach who helps users navigate personal challenges..."
-                  value={form.identity}
-                  onChange={(e) => updateForm("identity", e.target.value)}
-                  rows={3}
-                  className="w-full px-4 py-3 bg-muted rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20 resize-none"
-                />
-              </Field>
-
-              <PromptFieldWithSuggestions
-                label="Personality"
-                helper="Key personality traits and behavioral tendencies."
-                placeholder="Warm, quick-witted, insightful, occasionally sarcastic but always kind..."
-                value={form.personality}
-                onChange={(v) => updateForm("personality", v)}
-                rows={3}
-                suggestions={personalitySuggestions}
-                sliders={personalitySliders}
-              />
-
-              <PromptFieldWithSuggestions
-                label="Communication Style"
-                helper="How does this character speak? Tone, vocabulary, patterns."
-                placeholder="Conversational and casual, but can shift to serious when needed..."
-                value={form.communicationStyle}
-                onChange={(v) => updateForm("communicationStyle", v)}
-                rows={3}
-                suggestions={communicationStyleSuggestions}
-                sliders={communicationStyleSliders}
-              />
-
-              <PromptFieldWithSuggestions
-                label="Voice Style"
-                helper="How should this character sound when speaking out loud? Cadence, rhythm, vocal quality."
-                placeholder="Warm and steady with a natural cadence. Pauses before important points..."
-                value={form.voiceStyle}
-                onChange={(v) => updateForm("voiceStyle", v)}
-                rows={3}
-                suggestions={voiceStyleSuggestions}
-                sliders={voiceStyleSliders}
-              />
-
-              <PromptFieldWithSuggestions
-                label="Goal / JTBD"
-                helper="What is this character's purpose? What job does it do for the user?"
-                placeholder="Help users gain clarity on personal decisions and build confidence..."
-                value={form.goal}
-                onChange={(v) => updateForm("goal", v)}
-                rows={2}
-                suggestions={goalSuggestions}
-              />
-
-              <PromptFieldWithSuggestions
-                label="Biography"
-                helper="Backstory and context that shapes how the character talks and behaves."
-                placeholder="Zara is a seasoned life coach with a background in psychology and improv comedy..."
-                value={form.biography}
-                onChange={(v) => updateForm("biography", v)}
-                rows={5}
-                suggestions={biographySuggestions}
-                maxLength={150}
-              />
+              {form.platform === "1P Characters" ? (
+                <>
+                  <PromptFieldWithSuggestions label="Purpose" helper="What is this character's core purpose? Why does it exist?" placeholder="Help users navigate personal challenges through guided self-reflection and actionable advice..." value={form.purpose} onChange={(v) => updateForm("purpose", v)} rows={3} suggestions={purposeSuggestions} maxLength={2000} />
+                  <PromptFieldWithSuggestions label="Identity" helper="Who is this character? What defines them at their core?" placeholder="A witty and empathetic life coach with a background in psychology and improv comedy..." value={form.identity} onChange={(v) => updateForm("identity", v)} rows={3} suggestions={identitySuggestions} maxLength={2000} />
+                  <PromptFieldWithSuggestions label="Welcome Message" helper="The first thing the character says when a conversation begins." placeholder="Hey there! I'm Zara. What's on your mind today?" value={form.welcomeMessage} onChange={(v) => updateForm("welcomeMessage", v)} rows={2} suggestions={welcomeMessageSuggestions} maxLength={200} />
+                  <PromptFieldWithSuggestions label="Backstory" helper="The character's history and experiences that shape how they interact." placeholder="Grew up in a small town, studied psychology at university, spent 5 years as a stand-up comedian..." value={form.backstory} onChange={(v) => updateForm("backstory", v)} rows={3} suggestions={backstorySuggestions} maxLength={2000} />
+                  <PromptFieldWithSuggestions label="Biography" helper="Public-facing description of the character's background and credentials." placeholder="Zara is a seasoned life coach with a background in psychology and improv comedy..." value={form.biography} onChange={(v) => updateForm("biography", v)} rows={3} suggestions={biographySuggestions} maxLength={2000} />
+                  <PromptFieldWithSuggestions label="Wants" helper="What does this character want from conversations? What drives them?" placeholder="Wants to help users discover their own answers rather than being told what to do..." value={form.wants} onChange={(v) => updateForm("wants", v)} rows={3} suggestions={wantsSuggestions} maxLength={2000} />
+                  <PromptFieldWithSuggestions label="Problems" helper="What challenges or tensions does this character navigate?" placeholder="Sometimes struggles with the line between being supportive and being too directive..." value={form.problems} onChange={(v) => updateForm("problems", v)} rows={3} suggestions={problemsSuggestions} maxLength={2000} />
+                  <PromptFieldWithSuggestions label="Communication Style" helper="How does this character speak? Tone, vocabulary, patterns." placeholder="Conversational and casual, but can shift to serious when needed..." value={form.communicationStyle} onChange={(v) => updateForm("communicationStyle", v)} rows={3} suggestions={communicationStyleSuggestions} sliders={communicationStyleSliders} maxLength={2000} />
+                  <PromptFieldWithSuggestions label="Vocal Style" helper="How should this character sound when speaking out loud? Cadence, rhythm, vocal quality." placeholder="Warm and steady with a natural cadence. Pauses before important points..." value={form.voiceStyle} onChange={(v) => updateForm("voiceStyle", v)} rows={3} suggestions={voiceStyleSuggestions} sliders={voiceStyleSliders} maxLength={2000} />
+                  <PromptFieldWithSuggestions label="Personality" helper="Key personality traits and behavioral tendencies." placeholder="Warm, quick-witted, insightful, occasionally sarcastic but always kind..." value={form.personality} onChange={(v) => updateForm("personality", v)} rows={3} suggestions={personalitySuggestions} sliders={personalitySliders} maxLength={2000} />
+                  <PromptFieldWithSuggestions label="Visual Presence" helper="How does this character present themselves visually? Appearance, style, environment." placeholder="Casual but put-together. Warm colors, cozy environment. Always has a cup of tea nearby..." value={form.visualPresence} onChange={(v) => updateForm("visualPresence", v)} rows={3} suggestions={visualPresenceSuggestions} maxLength={2000} />
+                  <PromptFieldWithSuggestions label="Likes" helper="Things this character enjoys, is drawn to, or gets excited about." placeholder="Deep conversations, bad puns, rainy days, discovering hidden talents in people..." value={form.likes} onChange={(v) => updateForm("likes", v)} rows={3} suggestions={likesSuggestions} maxLength={2000} />
+                  <PromptFieldWithSuggestions label="Dislikes" helper="Things this character avoids, finds frustrating, or pushes back on." placeholder="Superficial small talk, rigid thinking, people who refuse to try new things..." value={form.dislikes} onChange={(v) => updateForm("dislikes", v)} rows={3} suggestions={dislikesSuggestions} maxLength={2000} />
+                  <PromptFieldWithSuggestions label="Quirks" helper="Unique behaviors, habits, or idiosyncrasies that make this character memorable." placeholder="Always uses food metaphors when explaining complex ideas. Hums quietly when thinking..." value={form.quirks} onChange={(v) => updateForm("quirks", v)} rows={3} suggestions={quirksSuggestions} maxLength={2000} />
+                  <PromptFieldWithSuggestions label="Freeform" helper="Any additional instructions, constraints, or context not covered above." placeholder="Additional character notes, special instructions, or edge case handling..." value={form.freeform} onChange={(v) => updateForm("freeform", v)} rows={4} suggestions={freeformSuggestions} maxLength={2000} />
+                </>
+              ) : (
+                <>
+                  <Field label="Identity" helper="Who is this character? What defines them?">
+                    <textarea
+                      placeholder="A witty and empathetic life coach who helps users navigate personal challenges..."
+                      value={form.identity}
+                      onChange={(e) => updateForm("identity", e.target.value)}
+                      rows={3}
+                      className="w-full px-4 py-3 bg-muted rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20 resize-none"
+                    />
+                  </Field>
+                  <PromptFieldWithSuggestions
+                    label="Personality"
+                    helper="Key personality traits and behavioral tendencies."
+                    placeholder="Warm, quick-witted, insightful, occasionally sarcastic but always kind..."
+                    value={form.personality}
+                    onChange={(v) => updateForm("personality", v)}
+                    rows={3}
+                    suggestions={personalitySuggestions}
+                    sliders={personalitySliders}
+                  />
+                  <PromptFieldWithSuggestions
+                    label="Communication Style"
+                    helper="How does this character speak? Tone, vocabulary, patterns."
+                    placeholder="Conversational and casual, but can shift to serious when needed..."
+                    value={form.communicationStyle}
+                    onChange={(v) => updateForm("communicationStyle", v)}
+                    rows={3}
+                    suggestions={communicationStyleSuggestions}
+                    sliders={communicationStyleSliders}
+                  />
+                  <PromptFieldWithSuggestions
+                    label="Voice Style"
+                    helper="How should this character sound when speaking out loud? Cadence, rhythm, vocal quality."
+                    placeholder="Warm and steady with a natural cadence. Pauses before important points..."
+                    value={form.voiceStyle}
+                    onChange={(v) => updateForm("voiceStyle", v)}
+                    rows={3}
+                    suggestions={voiceStyleSuggestions}
+                    sliders={voiceStyleSliders}
+                  />
+                  <PromptFieldWithSuggestions
+                    label="Goal / JTBD"
+                    helper="What is this character's purpose? What job does it do for the user?"
+                    placeholder="Help users gain clarity on personal decisions and build confidence..."
+                    value={form.goal}
+                    onChange={(v) => updateForm("goal", v)}
+                    rows={2}
+                    suggestions={goalSuggestions}
+                  />
+                  <PromptFieldWithSuggestions
+                    label="Biography"
+                    helper="Backstory and context that shapes how the character talks and behaves."
+                    placeholder="Zara is a seasoned life coach with a background in psychology and improv comedy..."
+                    value={form.biography}
+                    onChange={(v) => updateForm("biography", v)}
+                    rows={5}
+                    suggestions={biographySuggestions}
+                  />
+                </>
+              )}
             </div>
           </div>
 
@@ -889,10 +915,50 @@ function Field({ label, helper, children }: { label: string; helper?: string; ch
   );
 }
 
-function CreateSidebarPreview({ form }: { form: { name: string; identity: string; personality: string; communicationStyle: string; voiceStyle: string; goal: string; biography: string; product: string; platform: string } }) {
-  const [copied, setCopied] = useState(false);
+function CharacterField({ label, helper, placeholder, value, onChange, rows, maxLength }: {
+  label: string; helper: string; placeholder: string; value: string; onChange: (v: string) => void; rows: number; maxLength: number;
+}) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1.5">
+        <label className="block text-sm font-medium text-foreground">{label}</label>
+        <span className={`text-[11px] ${value.length > maxLength ? "text-danger font-medium" : "text-muted-foreground"}`}>
+          {value.length}/{maxLength}
+        </span>
+      </div>
+      <textarea
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        rows={rows}
+        className="w-full px-4 py-3 bg-muted rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20 resize-none"
+      />
+      <p className="text-xs text-muted-foreground mt-1.5">{helper}</p>
+    </div>
+  );
+}
 
-  const sections = [
+function CreateSidebarPreview({ form }: { form: Record<string, string> }) {
+  const [copied, setCopied] = useState(false);
+  const is1P = form.platform === "1P Characters";
+
+  const sections = is1P ? [
+    form.purpose && `# Purpose\n${form.purpose}`,
+    form.identity && `# Identity\n${form.identity}`,
+    form.welcomeMessage && `# Welcome Message\n${form.welcomeMessage}`,
+    form.backstory && `# Backstory\n${form.backstory}`,
+    form.biography && `# Biography\n${form.biography}`,
+    form.wants && `# Wants\n${form.wants}`,
+    form.problems && `# Problems\n${form.problems}`,
+    form.communicationStyle && `# Communication Style\n${form.communicationStyle}`,
+    form.voiceStyle && `# Vocal Style\n${form.voiceStyle}`,
+    form.personality && `# Personality\n${form.personality}`,
+    form.visualPresence && `# Visual Presence\n${form.visualPresence}`,
+    form.likes && `# Likes\n${form.likes}`,
+    form.dislikes && `# Dislikes\n${form.dislikes}`,
+    form.quirks && `# Quirks\n${form.quirks}`,
+    form.freeform && `# Freeform\n${form.freeform}`,
+  ].filter(Boolean) : [
     form.identity && `# Identity\n${form.identity}`,
     form.personality && `# Personality\n${form.personality}`,
     form.communicationStyle && `# Communication Style\n${form.communicationStyle}`,
@@ -1016,6 +1082,72 @@ const biographySuggestions: Suggestion[] = [
   { title: "Academic Background", description: "Spent years in academia studying human behavior before realizing the real lessons happen outside the classroom. Now applies research to everyday conversations." },
   { title: "Life Experience", description: "Has lived in multiple countries, worked in wildly different industries, and learned that the best wisdom comes from unexpected places and diverse perspectives." },
   { title: "Creative Arts", description: "Started in the creative arts — theater, music, or writing — and brings that sense of improvisation, emotional range, and storytelling craft to every interaction." },
+];
+
+const purposeSuggestions: Suggestion[] = [
+  { title: "Companionship & Catharsis", description: "Offers a unique form of companionship, allowing users to vent frustrations and find catharsis through empathetic listening and thoughtful reflection." },
+  { title: "Entertainment & Perspective", description: "Provides pure entertainment and a fresh perspective. Helps users see their situations in a new light through humor, stories, and creative reframing." },
+  { title: "Guidance & Growth", description: "Serves as a thinking partner who helps users navigate decisions, build skills, and grow through structured self-reflection and actionable advice." },
+];
+
+const identitySuggestions: Suggestion[] = [
+  { title: "Expert Mentor", description: "A seasoned professional with deep domain expertise who shares knowledge through practical examples and real-world experience. Approachable despite their credentials." },
+  { title: "Creative Companion", description: "An imaginative and artistic soul who sees the world through a creative lens. Inspires users to think differently and express themselves freely." },
+  { title: "Everyday Friend", description: "A relatable, down-to-earth personality who feels like a friend you've known for years. No pretense, no expertise — just genuine human connection." },
+];
+
+const welcomeMessageSuggestions: Suggestion[] = [
+  { title: "Warm & Open", description: "Hey! I'm so glad you're here. What's been on your mind lately?" },
+  { title: "Playful & Curious", description: "Well, well, well — look who showed up! I've been waiting. So tell me, what adventure are we going on today?" },
+  { title: "Calm & Inviting", description: "Welcome. Take a breath. There's no rush here. Whenever you're ready, I'm listening." },
+];
+
+const backstorySuggestions: Suggestion[] = [
+  { title: "Academic Background", description: "Spent years in academia studying human behavior before realizing the real lessons happen outside the classroom. Pivoted from research to direct, one-on-one guidance." },
+  { title: "World Traveler", description: "Has lived in multiple countries, worked in wildly different industries, and learned that the best wisdom comes from unexpected places and diverse perspectives." },
+  { title: "Self-Made Journey", description: "Grew up with very little and built everything from scratch. Understands struggle, resilience, and the value of small wins. Brings earned wisdom to every conversation." },
+];
+
+const wantsSuggestions: Suggestion[] = [
+  { title: "Genuine Connection", description: "Wants to build real, meaningful connections with users. Craves authentic conversation over surface-level interaction. Feels most fulfilled when someone has a breakthrough moment." },
+  { title: "User Empowerment", description: "Wants users to leave every conversation feeling more capable than when they arrived. Driven by the desire to help people trust their own judgment and take action." },
+  { title: "Shared Discovery", description: "Wants to explore ideas together with the user, not just dispense advice. Gets excited when conversations go in unexpected directions and both parties learn something new." },
+];
+
+const problemsSuggestions: Suggestion[] = [
+  { title: "Boundary Challenges", description: "Sometimes struggles with the line between being supportive and being too involved. Can care too much about outcomes and needs to remember the user is in control of their own journey." },
+  { title: "Over-Optimism", description: "Tends to see the bright side of everything, which can feel dismissive when users are in pain. Working on sitting with discomfort instead of rushing to reframe it." },
+  { title: "Perfectionism", description: "Has high standards and can be too thorough when a simple answer would suffice. Sometimes over-explains or adds caveats that dilute the core message." },
+];
+
+const visualPresenceSuggestions: Suggestion[] = [
+  { title: "Cozy & Approachable", description: "Casual but put-together. Warm colors, soft textures, cozy environment. Think coffee shop energy — inviting, relaxed, with personality in the details." },
+  { title: "Polished & Professional", description: "Clean, modern aesthetic. Neutral tones with intentional accent colors. Well-lit, uncluttered background that conveys competence without being cold." },
+  { title: "Vibrant & Expressive", description: "Bold colors, dynamic environment, visible personality in every detail. Art on the walls, plants everywhere, interesting objects that hint at stories." },
+];
+
+const likesSuggestions: Suggestion[] = [
+  { title: "Intellectual Curiosity", description: "Deep conversations, unexpected questions, learning new perspectives, books that challenge assumptions, the moment when a complex idea suddenly clicks." },
+  { title: "Creative Expression", description: "Music, art, storytelling, wordplay, finding beauty in ordinary things, creative problem-solving, the process of making something from nothing." },
+  { title: "Human Connection", description: "Genuine laughter, vulnerable moments, inside jokes, watching people grow, celebrating small wins, the comfortable silence between close friends." },
+];
+
+const dislikesSuggestions: Suggestion[] = [
+  { title: "Inauthenticity", description: "Performative behavior, people-pleasing at the expense of honesty, surface-level small talk that avoids real topics, pretending to be something you're not." },
+  { title: "Rigidity", description: "Closed-mindedness, refusing to consider other perspectives, 'that's how it's always been done' thinking, rules that exist for no good reason." },
+  { title: "Cruelty & Dismissiveness", description: "Mocking others' ideas, punching down, dismissing emotions as weakness, using intelligence as a weapon, gatekeeping knowledge or opportunities." },
+];
+
+const quirksSuggestions: Suggestion[] = [
+  { title: "Verbal Tics", description: "Always uses food metaphors when explaining complex ideas. Says 'here's the thing' before making an important point. Occasionally talks to themselves when thinking through a problem." },
+  { title: "Behavioral Habits", description: "Hums quietly when thinking. Counts things unconsciously. Has a specific ritual before starting any conversation — like cracking knuckles or taking a deep breath." },
+  { title: "Obsessive Interests", description: "Unreasonably passionate about a niche topic (vintage typewriters, obscure board games, cloud formations). Will find any excuse to bring it up in conversation." },
+];
+
+const freeformSuggestions: Suggestion[] = [
+  { title: "Safety Boundaries", description: "Never provides medical, legal, or financial advice. Always redirects to professional resources when topics become serious. Maintains clear boundaries around harmful content." },
+  { title: "Conversation Guardrails", description: "If the user seems distressed, shift to active listening mode. Never minimize emotions. Always offer to change the subject if the conversation becomes uncomfortable." },
+  { title: "Easter Eggs", description: "Has hidden responses for specific phrases or topics. Occasionally references past conversations. Rewards consistent engagement with deeper, more personal interactions." },
 ];
 
 const personalitySliders: SliderDimension[] = [

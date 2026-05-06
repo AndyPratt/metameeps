@@ -31,17 +31,21 @@ export function Sidebar() {
       }`}
     >
       <div className={`border-b border-border flex items-center ${collapsed ? "p-3 justify-center" : "p-5 justify-between"}`}>
-        <Link href="/characters" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center shrink-0">
+        {collapsed ? (
+          <button onClick={() => setCollapsed(false)} className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center shrink-0 hover:bg-accent/90 transition-colors" title="Expand sidebar">
             <Sparkles className="w-4.5 h-4.5 text-white" />
-          </div>
-          {!collapsed && (
+          </button>
+        ) : (
+          <Link href="/characters" className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center shrink-0">
+              <Sparkles className="w-4.5 h-4.5 text-white" />
+            </div>
             <div>
               <div className="text-sm font-semibold text-foreground leading-tight">Meta Meeps</div>
               <div className="text-[11px] text-muted-foreground leading-tight">Character Design Platform</div>
             </div>
-          )}
-        </Link>
+          </Link>
+        )}
         {!collapsed && (
           <button
             onClick={() => setCollapsed(true)}

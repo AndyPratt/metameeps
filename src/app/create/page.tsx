@@ -1115,7 +1115,7 @@ function CreateSidebarPreview({ form }: { form: Record<string, string> }) {
                           <div className="flex items-center gap-1.5 mb-1.5">
                             <span className="font-semibold text-foreground">{key}</span>
                             {isNew && <span className="px-1.5 py-0.5 bg-success/10 text-success rounded text-[9px] font-semibold uppercase">New</span>}
-                            {isRemoved && <span className="px-1.5 py-0.5 bg-danger/10 text-danger rounded text-[9px] font-semibold uppercase">Removed</span>}
+                            {isRemoved && <span className="w-2 h-2 rounded-full bg-danger shrink-0" />}
                             {isChanged && <span className="px-1.5 py-0.5 bg-warning/10 text-warning rounded text-[9px] font-semibold uppercase">Changed</span>}
                             {isUnchanged && <span className="px-1.5 py-0.5 bg-muted text-muted-foreground rounded text-[9px] font-semibold uppercase">Same</span>}
                           </div>
@@ -1138,7 +1138,7 @@ function CreateSidebarPreview({ form }: { form: Record<string, string> }) {
                           )}
                           {isRemoved && (
                             <div className="bg-danger/5 border border-danger/10 rounded-md p-3">
-                              <p className="text-sm text-foreground font-mono leading-relaxed whitespace-pre-wrap line-through opacity-60">{prod}</p>
+                              <p className="text-sm text-foreground font-mono leading-relaxed whitespace-pre-wrap">{prod}</p>
                             </div>
                           )}
                           {isUnchanged && (

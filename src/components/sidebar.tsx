@@ -7,7 +7,6 @@ import {
   PenTool,
   FlaskConical,
   BarChart3,
-  RefreshCw,
   Sparkles,
 } from "lucide-react";
 
@@ -16,7 +15,6 @@ const navItems = [
   { label: "Create", href: "/create", icon: PenTool },
   { label: "Test", href: "/test", icon: FlaskConical },
   { label: "Evaluate", href: "/evaluate", icon: BarChart3 },
-  { label: "Iterate", href: "/iterate", icon: RefreshCw },
 ];
 
 export function Sidebar() {

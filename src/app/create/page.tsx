@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { voices, apps, workstreams } from "@/lib/mock-data";
+import { voices, workstreams } from "@/lib/mock-data";
 import {
   ArrowLeft,
   ArrowRight,
@@ -118,7 +118,7 @@ export default function CreatePage() {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const showScenes = form.product === "Meta AI" && form.platform === "1P Characters";
+  const showScenes = form.platform === "1P Characters";
 
   const stepLabels: Record<Step, string> = {
     prompt: "Step 1: Define the character prompt",
@@ -349,28 +349,16 @@ export default function CreatePage() {
         <div className="flex flex-col lg:flex-row">
           <div className="flex-1 p-4 sm:p-6 md:p-8 max-w-2xl">
             <div className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Field label="App">
-                  <select
-                    value={form.product}
-                    onChange={(e) => updateForm("product", e.target.value)}
-                    className="w-full px-4 py-3 bg-muted rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20"
-                  >
-                    <option value="">Select app...</option>
-                    {apps.map((a) => <option key={a} value={a}>{a}</option>)}
-                  </select>
-                </Field>
-                <Field label="Workstream">
-                  <select
-                    value={form.platform}
-                    onChange={(e) => updateForm("platform", e.target.value)}
-                    className="w-full px-4 py-3 bg-muted rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20"
-                  >
-                    <option value="">Select workstream...</option>
-                    {workstreams.map((w) => <option key={w} value={w}>{w}</option>)}
-                  </select>
-                </Field>
-              </div>
+              <Field label="Workstream">
+                <select
+                  value={form.platform}
+                  onChange={(e) => updateForm("platform", e.target.value)}
+                  className="w-full px-4 py-3 bg-muted rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20"
+                >
+                  <option value="">Select workstream...</option>
+                  {workstreams.map((w) => <option key={w} value={w}>{w}</option>)}
+                </select>
+              </Field>
 
               <Field label="Name" helper="Give your character a memorable name.">
                 <input

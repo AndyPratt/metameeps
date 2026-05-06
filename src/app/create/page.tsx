@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { voices, products, platforms } from "@/lib/mock-data";
+import { voices, apps, workstreams } from "@/lib/mock-data";
 import {
   ArrowLeft,
   ArrowRight,
@@ -44,6 +44,43 @@ interface Chapter {
   expanded: boolean;
 }
 
+interface Scene {
+  id: string;
+  title: string;
+  description: string;
+  format: string;
+  maxProactiveStreak: number;
+  chapters: Chapter[];
+  expanded: boolean;
+}
+
+function createEmptyScene(): Scene {
+  return {
+    id: `scene-${Date.now()}`,
+    title: "",
+    description: "",
+    format: "UNSTRUCTURED",
+    maxProactiveStreak: 3,
+    chapters: [createEmptyChapter()],
+    expanded: true,
+  };
+}
+
+function createEmptyChapter(): Chapter {
+  return {
+    id: `ch-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    title: "",
+    type: "STANDARD",
+    content: "",
+    turnTakingRules: "",
+    progressionCriteria: "",
+    suggestedPrompts: [],
+    excludedPersonas: [],
+    uiElements: [],
+    expanded: true,
+  };
+}
+
 export default function CreatePage() {
   const [step, setStep] = useState<Step>("prompt");
   const [selectedVoice, setSelectedVoice] = useState<string>("");
@@ -56,39 +93,20 @@ export default function CreatePage() {
     identity: "",
     personality: "",
     communicationStyle: "",
+    voiceStyle: "",
     goal: "",
     biography: "",
     product: "",
     platform: "",
   });
 
-  const [sceneDetails, setSceneDetails] = useState({
-    title: "",
-    description: "",
-    format: "UNSTRUCTURED",
-    maxProactiveStreak: 3,
-  });
-
-  const [chapters, setChapters] = useState<Chapter[]>([
-    {
-      id: "ch-1",
-      title: "",
-      type: "STANDARD",
-      content: "",
-      turnTakingRules: "",
-      progressionCriteria: "",
-      suggestedPrompts: [],
-      excludedPersonas: [],
-      uiElements: [],
-      expanded: true,
-    },
-  ]);
+  const [scenes, setScenes] = useState<Scene[]>([createEmptyScene()]);
 
   const updateForm = (field: string, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const showScenes = form.product === "C50" && form.platform === "1P Characters";
+  const showScenes = form.product === "Meta AI" && form.platform === "1P Characters";
 
   const stepLabels: Record<Step, string> = {
     prompt: "Step 1: Define the character prompt",
@@ -110,85 +128,136 @@ export default function CreatePage() {
 
   const isLastStep = step === "scenes" || (step === "voice-embodiment" && !showScenes);
 
-  const addChapter = () => {
-    setChapters((prev) => [
-      ...prev,
-      {
-        id: `ch-${Date.now()}`,
-        title: "",
-        type: "STANDARD",
-        content: "",
-        turnTakingRules: "",
-        progressionCriteria: "",
-        suggestedPrompts: [],
-        excludedPersonas: [],
-        uiElements: [],
-        expanded: true,
-      },
-    ]);
+  const updateScene = (sceneId: string, updates: Partial<Scene>) => {
+    setScenes((prev) => prev.map((s) => (s.id === sceneId ? { ...s, ...updates } : s)));
   };
 
-  const updateChapter = (id: string, updates: Partial<Chapter>) => {
-    setChapters((prev) =>
-      prev.map((ch) => (ch.id === id ? { ...ch, ...updates } : ch))
-    );
+  const removeScene = (sceneId: string) => {
+    setScenes((prev) => prev.filter((s) => s.id !== sceneId));
   };
 
-  const removeChapter = (id: string) => {
-    setChapters((prev) => prev.filter((ch) => ch.id !== id));
+  const updateChapterInScene = (sceneId: string, chapterId: string, updates: Partial<Chapter>) => {
+    setScenes((prev) => prev.map((s) =>
+      s.id === sceneId
+        ? { ...s, chapters: s.chapters.map((ch) => (ch.id === chapterId ? { ...ch, ...updates } : ch)) }
+        : s
+    ));
   };
 
-  const moveChapter = (id: string, direction: "up" | "down") => {
-    setChapters((prev) => {
-      const idx = prev.findIndex((ch) => ch.id === id);
-      if (
-        (direction === "up" && idx === 0) ||
-        (direction === "down" && idx === prev.length - 1)
-      )
-        return prev;
-      const next = [...prev];
+  const addChapterToScene = (sceneId: string) => {
+    setScenes((prev) => prev.map((s) =>
+      s.id === sceneId ? { ...s, chapters: [...s.chapters, createEmptyChapter()] } : s
+    ));
+  };
+
+  const removeChapterFromScene = (sceneId: string, chapterId: string) => {
+    setScenes((prev) => prev.map((s) =>
+      s.id === sceneId ? { ...s, chapters: s.chapters.filter((ch) => ch.id !== chapterId) } : s
+    ));
+  };
+
+  const moveChapterInScene = (sceneId: string, chapterId: string, direction: "up" | "down") => {
+    setScenes((prev) => prev.map((s) => {
+      if (s.id !== sceneId) return s;
+      const idx = s.chapters.findIndex((ch) => ch.id === chapterId);
+      if ((direction === "up" && idx === 0) || (direction === "down" && idx === s.chapters.length - 1)) return s;
+      const next = [...s.chapters];
       const swapIdx = direction === "up" ? idx - 1 : idx + 1;
       [next[idx], next[swapIdx]] = [next[swapIdx], next[idx]];
-      return next;
-    });
+      return { ...s, chapters: next };
+    }));
   };
 
-  const addSuggestedPrompt = (chapterId: string) => {
-    setChapters((prev) =>
-      prev.map((ch) =>
-        ch.id === chapterId
-          ? { ...ch, suggestedPrompts: [...ch.suggestedPrompts, ""] }
-          : ch
-      )
-    );
+  const addSuggestedPrompt = (sceneId: string, chapterId: string) => {
+    setScenes((prev) => prev.map((s) =>
+      s.id === sceneId
+        ? { ...s, chapters: s.chapters.map((ch) => ch.id === chapterId ? { ...ch, suggestedPrompts: [...ch.suggestedPrompts, ""] } : ch) }
+        : s
+    ));
   };
 
-  const updateSuggestedPrompt = (chapterId: string, promptIndex: number, value: string) => {
-    setChapters((prev) =>
-      prev.map((ch) =>
-        ch.id === chapterId
-          ? {
-              ...ch,
-              suggestedPrompts: ch.suggestedPrompts.map((p, i) =>
-                i === promptIndex ? value : p
-              ),
-            }
-          : ch
-      )
-    );
+  const updateSuggestedPrompt = (sceneId: string, chapterId: string, promptIndex: number, value: string) => {
+    setScenes((prev) => prev.map((s) =>
+      s.id === sceneId
+        ? { ...s, chapters: s.chapters.map((ch) => ch.id === chapterId ? { ...ch, suggestedPrompts: ch.suggestedPrompts.map((p, i) => i === promptIndex ? value : p) } : ch) }
+        : s
+    ));
   };
 
-  const removeSuggestedPrompt = (chapterId: string, promptIndex: number) => {
-    setChapters((prev) =>
-      prev.map((ch) =>
-        ch.id === chapterId
-          ? {
-              ...ch,
-              suggestedPrompts: ch.suggestedPrompts.filter((_, i) => i !== promptIndex),
-            }
-          : ch
-      )
-    );
+  const [generatingSceneId, setGeneratingSceneId] = useState<string | null>(null);
+
+  const generateChaptersFromDescription = (sceneId: string) => {
+    const scene = scenes.find((s) => s.id === sceneId);
+    if (!scene || !scene.description.trim()) return;
+
+    setGeneratingSceneId(sceneId);
+
+    setTimeout(() => {
+      const desc = scene.description.toLowerCase();
+      const chapters: Chapter[] = [];
+      const ts = () => `ch-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+
+      chapters.push({
+        id: ts(), title: "Introduction", type: "INTRO",
+        content: `Set the stage for the scene. Introduce the setting, establish the character's presence, and create the initial tone. The character greets the user and establishes the context for what's about to happen.`,
+        turnTakingRules: "Character speaks first to set the scene. Allow the user to respond before continuing.", progressionCriteria: "User has acknowledged the introduction and shown readiness to engage.",
+        suggestedPrompts: ["Tell me more about where we are.", "What are we doing here?"], excludedPersonas: [], uiElements: [], expanded: false,
+      });
+
+      if (desc.includes("problem") || desc.includes("challenge") || desc.includes("discover") || desc.includes("diagnos") || desc.includes("investigat")) {
+        chapters.push({
+          id: ts(), title: "Discovery & Investigation", type: "STANDARD",
+          content: `The core challenge or problem is revealed. The character walks the user through understanding the situation, gathering information, and forming initial hypotheses. Build tension through unanswered questions.`,
+          turnTakingRules: "Alternate between character exposition and user questions. Character should pause for user input after revealing key information.", progressionCriteria: "User has understood the core problem and has enough information to form an opinion.",
+          suggestedPrompts: ["What do you think happened?", "Can you show me more details?", "What are our options?"], excludedPersonas: [], uiElements: [], expanded: false,
+        });
+      }
+
+      if (desc.includes("choice") || desc.includes("decision") || desc.includes("choose") || desc.includes("branch") || desc.includes("dilemma")) {
+        chapters.push({
+          id: ts(), title: "The Decision Point", type: "BRANCHING",
+          content: `Present the user with a meaningful choice that has real consequences. Each option should be compelling with clear trade-offs. The character presents the options without revealing which is "correct" — there may not be one.`,
+          turnTakingRules: "Character presents options, then waits for the user's decision. Do not rush or influence the choice.", progressionCriteria: "User has made a clear choice and expressed their reasoning.",
+          suggestedPrompts: ["I need more time to think.", "What would you do?", "What happens if we choose wrong?"], excludedPersonas: [], uiElements: [], expanded: false,
+        });
+      }
+
+      if (desc.includes("conflict") || desc.includes("tension") || desc.includes("crisis") || desc.includes("struggle") || desc.includes("pressure")) {
+        chapters.push({
+          id: ts(), title: "Rising Tension", type: "STANDARD",
+          content: `The stakes increase. Complications arise from the user's previous choices or from external factors. The character must adapt their approach based on how the conversation has developed.`,
+          turnTakingRules: "Shorter, more urgent exchanges. Character can send consecutive messages to build urgency but should check in with the user.", progressionCriteria: "The crisis has peaked and the user has taken action to address it.",
+          suggestedPrompts: ["What do we do now?", "Is there still time?", "I'm not sure about this."], excludedPersonas: [], uiElements: [], expanded: false,
+        });
+      }
+
+      if (desc.includes("learn") || desc.includes("teach") || desc.includes("skill") || desc.includes("practice") || desc.includes("exercise")) {
+        chapters.push({
+          id: ts(), title: "Guided Practice", type: "STANDARD",
+          content: `The character guides the user through a hands-on exercise or skill-building activity. Focus on learning by doing, with the character providing real-time feedback and encouragement.`,
+          turnTakingRules: "Character provides instructions in small steps, waits for user to attempt each step before giving feedback.", progressionCriteria: "User has completed the exercise and demonstrated understanding.",
+          suggestedPrompts: ["Can you show me an example first?", "I'm stuck on this part.", "Let me try again."], excludedPersonas: [], uiElements: [], expanded: false,
+        });
+      }
+
+      chapters.push({
+        id: ts(), title: "Resolution & Reflection", type: "OUTRO",
+        content: `Bring the scene to a meaningful close. The character reflects on what happened, acknowledges the user's contributions and choices, and draws out any lessons or insights. End on a note that feels earned.`,
+        turnTakingRules: "Character leads the reflection but invites the user to share their takeaways. Allow space for emotional processing.", progressionCriteria: "User has reflected on the experience and feels a sense of closure.",
+        suggestedPrompts: ["What did you learn from this?", "Would you do anything differently?", "What happens next?"], excludedPersonas: [], uiElements: [], expanded: false,
+      });
+
+      updateScene(sceneId, { chapters, format: "STRUCTURED" });
+      setGeneratingSceneId(null);
+    }, 1500);
+  };
+
+  const removeSuggestedPrompt = (sceneId: string, chapterId: string, promptIndex: number) => {
+    setScenes((prev) => prev.map((s) =>
+      s.id === sceneId
+        ? { ...s, chapters: s.chapters.map((ch) => ch.id === chapterId ? { ...ch, suggestedPrompts: ch.suggestedPrompts.filter((_, i) => i !== promptIndex) } : ch) }
+        : s
+    ));
   };
 
   return (
@@ -279,24 +348,24 @@ export default function CreatePage() {
               </Field>
 
               <div className="grid grid-cols-2 gap-4">
-                <Field label="Product">
+                <Field label="App">
                   <select
                     value={form.product}
                     onChange={(e) => updateForm("product", e.target.value)}
                     className="w-full px-4 py-3 bg-muted rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20"
                   >
-                    <option value="">Select product...</option>
-                    {products.map((p) => <option key={p} value={p}>{p}</option>)}
+                    <option value="">Select app...</option>
+                    {apps.map((a) => <option key={a} value={a}>{a}</option>)}
                   </select>
                 </Field>
-                <Field label="Platform">
+                <Field label="Workstream">
                   <select
                     value={form.platform}
                     onChange={(e) => updateForm("platform", e.target.value)}
                     className="w-full px-4 py-3 bg-muted rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20"
                   >
-                    <option value="">Select platform...</option>
-                    {platforms.map((p) => <option key={p} value={p}>{p}</option>)}
+                    <option value="">Select workstream...</option>
+                    {workstreams.map((w) => <option key={w} value={w}>{w}</option>)}
                   </select>
                 </Field>
               </div>
@@ -331,6 +400,17 @@ export default function CreatePage() {
                 rows={3}
                 suggestions={communicationStyleSuggestions}
                 sliders={communicationStyleSliders}
+              />
+
+              <PromptFieldWithSuggestions
+                label="Voice Style"
+                helper="How should this character sound when speaking out loud? Cadence, rhythm, vocal quality."
+                placeholder="Warm and steady with a natural cadence. Pauses before important points..."
+                value={form.voiceStyle}
+                onChange={(v) => updateForm("voiceStyle", v)}
+                rows={3}
+                suggestions={voiceStyleSuggestions}
+                sliders={voiceStyleSliders}
               />
 
               <PromptFieldWithSuggestions
@@ -549,302 +629,250 @@ export default function CreatePage() {
       )}
 
       {step === "scenes" && (
-        <div className="p-8 max-w-4xl space-y-10">
-          {/* Scene Details */}
-          <section>
-            <div className="flex items-center gap-2 mb-1">
-              <Clapperboard className="w-5 h-5 text-foreground" />
-              <h2 className="text-base font-semibold text-foreground">Scene Details</h2>
+        <div className="p-8 max-w-4xl">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <p className="text-sm text-muted-foreground">
+                {scenes.length} {scenes.length === 1 ? "scene" : "scenes"} &middot; {scenes.reduce((sum, s) => sum + s.chapters.length, 0)} total chapters
+              </p>
             </div>
-            <div className="border-t border-border mt-3 pt-6 space-y-5">
-              <div>
-                <label className="block text-sm font-semibold text-foreground mb-1">Scene Title</label>
-                <p className="text-xs text-muted-foreground mb-2">
-                  {sceneDetails.title.length}/50 max characters
-                </p>
-                <input
-                  type="text"
-                  placeholder="<Custom>"
-                  value={sceneDetails.title}
-                  onChange={(e) => {
-                    if (e.target.value.length <= 50)
-                      setSceneDetails((s) => ({ ...s, title: e.target.value }));
-                  }}
-                  className="w-full px-4 py-3 bg-white border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20"
-                />
-              </div>
+            <button
+              onClick={() => setScenes((prev) => [...prev, createEmptyScene()])}
+              className="flex items-center gap-1.5 px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Add Scene
+            </button>
+          </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-foreground mb-1">Scene Description</label>
-                <p className="text-xs text-muted-foreground mb-2">
-                  Describe the scene in detail ({sceneDetails.description.length} chars)
-                </p>
-                <textarea
-                  placeholder="Describe the scene in detail..."
-                  value={sceneDetails.description}
-                  onChange={(e) => setSceneDetails((s) => ({ ...s, description: e.target.value }))}
-                  rows={8}
-                  className="w-full px-4 py-3 bg-white border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20 resize-none"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">Format</label>
-                  <select
-                    value={sceneDetails.format}
-                    onChange={(e) => setSceneDetails((s) => ({ ...s, format: e.target.value }))}
-                    className="w-full px-4 py-3 bg-muted rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20"
+          <div className="space-y-6">
+            {scenes.map((scene, sceneIdx) => (
+              <div key={scene.id} className="border border-border rounded-xl overflow-hidden">
+                {/* Scene header */}
+                <div className="flex items-center justify-between px-5 py-4 bg-muted/30">
+                  <button
+                    onClick={() => updateScene(scene.id, { expanded: !scene.expanded })}
+                    className="flex items-center gap-3 flex-1 text-left"
                   >
-                    <option value="UNSTRUCTURED">UNSTRUCTURED</option>
-                    <option value="STRUCTURED">STRUCTURED</option>
-                    <option value="FREEFORM">FREEFORM</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-foreground mb-1">Max Proactive Streak</label>
-                  <p className="text-xs text-muted-foreground mb-2">
-                    Limit bot messages without user action
-                  </p>
-                  <input
-                    type="number"
-                    min={1}
-                    max={10}
-                    value={sceneDetails.maxProactiveStreak}
-                    onChange={(e) => setSceneDetails((s) => ({ ...s, maxProactiveStreak: Number(e.target.value) }))}
-                    className="w-full px-4 py-3 bg-white border border-border rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20"
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Chapters */}
-          <section>
-            <div className="flex items-center justify-between mb-1">
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-foreground" />
-                <h2 className="text-base font-semibold text-foreground">Chapters</h2>
-              </div>
-              <button
-                onClick={addChapter}
-                className="flex items-center gap-1.5 px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                Add Chapter
-              </button>
-            </div>
-            <p className="text-sm text-muted-foreground mb-4">
-              Define the narrative flow of your scene.
-            </p>
-
-            <div className="space-y-4">
-              {chapters.map((chapter, idx) => (
-                <div
-                  key={chapter.id}
-                  className="border border-border rounded-xl overflow-hidden"
-                >
-                  {/* Chapter header */}
-                  <div className="flex items-center justify-between px-5 py-3 bg-muted/50">
-                    <button
-                      onClick={() => updateChapter(chapter.id, { expanded: !chapter.expanded })}
-                      className="flex items-center gap-3 flex-1 text-left"
-                    >
-                      {chapter.expanded ? (
-                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                      ) : (
-                        <ChevronUp className="w-4 h-4 text-muted-foreground" />
-                      )}
-                      <span className="w-7 h-7 rounded-md bg-accent/10 flex items-center justify-center text-xs font-semibold text-accent">
-                        {idx + 1}
-                      </span>
-                      <span className="text-sm font-medium text-foreground">
-                        {chapter.title || "<Name your chapter>"}
-                      </span>
-                    </button>
-                    <div className="flex items-center gap-2">
-                      <span className="px-2 py-0.5 bg-muted rounded text-[11px] font-medium text-muted-foreground uppercase">
-                        {chapter.type}
-                      </span>
-                      <button
-                        onClick={() => moveChapter(chapter.id, "up")}
-                        className="p-1.5 rounded hover:bg-muted text-muted-foreground disabled:opacity-30"
-                        disabled={idx === 0}
-                      >
-                        <ArrowUp className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => moveChapter(chapter.id, "down")}
-                        className="p-1.5 rounded hover:bg-muted text-muted-foreground disabled:opacity-30"
-                        disabled={idx === chapters.length - 1}
-                      >
-                        <ArrowDown className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={addChapter}
-                        className="p-1.5 rounded hover:bg-muted text-muted-foreground"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => removeChapter(chapter.id)}
-                        className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-danger disabled:opacity-30"
-                        disabled={chapters.length === 1}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                    {scene.expanded ? (
+                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    ) : (
+                      <ChevronUp className="w-4 h-4 text-muted-foreground" />
+                    )}
+                    <Clapperboard className="w-5 h-5 text-accent" />
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">
+                        {scene.title || `Scene ${sceneIdx + 1}`}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {scene.format} &middot; {scene.chapters.length} {scene.chapters.length === 1 ? "chapter" : "chapters"}
+                      </p>
                     </div>
-                  </div>
+                  </button>
+                  <button
+                    onClick={() => removeScene(scene.id)}
+                    className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-danger transition-colors disabled:opacity-30"
+                    disabled={scenes.length === 1}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
 
-                  {/* Chapter body */}
-                  {chapter.expanded && (
-                    <div className="px-5 py-5 space-y-5">
-                      <div className="flex gap-4">
-                        <div className="flex-1">
-                          <label className="block text-sm text-accent font-medium mb-1.5">Chapter Title</label>
-                          <input
-                            type="text"
-                            placeholder="<Name your chapter>"
-                            value={chapter.title}
-                            onChange={(e) => updateChapter(chapter.id, { title: e.target.value })}
-                            className="w-full px-4 py-3 bg-white border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20"
-                          />
-                        </div>
-                        <div className="w-36">
-                          <label className="block text-sm text-accent font-medium mb-1.5">Type</label>
-                          <select
-                            value={chapter.type}
-                            onChange={(e) =>
-                              updateChapter(chapter.id, {
-                                type: e.target.value as Chapter["type"],
-                              })
-                            }
-                            className="w-full px-3 py-3 bg-muted rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20"
-                          >
-                            <option value="STANDARD">Standard</option>
-                            <option value="INTRO">Intro</option>
-                            <option value="OUTRO">Outro</option>
-                            <option value="BRANCHING">Branching</option>
-                          </select>
-                        </div>
-                      </div>
-
+                {/* Scene body */}
+                {scene.expanded && (
+                  <div className="px-5 py-5 space-y-8">
+                    {/* Scene Details */}
+                    <div className="space-y-5">
                       <div>
-                        <label className="block text-sm text-accent font-medium mb-1.5">Content</label>
-                        <textarea
-                          placeholder="<Describe the arc of the story>"
-                          value={chapter.content}
-                          onChange={(e) => updateChapter(chapter.id, { content: e.target.value })}
-                          rows={4}
-                          className="w-full px-4 py-3 bg-white border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20 resize-none"
+                        <label className="block text-sm font-semibold text-foreground mb-1">Scene Title</label>
+                        <p className="text-xs text-muted-foreground mb-2">{scene.title.length}/50 max characters</p>
+                        <input
+                          type="text"
+                          placeholder="<Custom>"
+                          value={scene.title}
+                          onChange={(e) => { if (e.target.value.length <= 50) updateScene(scene.id, { title: e.target.value }); }}
+                          className="w-full px-4 py-3 bg-white border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20"
                         />
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-foreground mb-1">Scene Description</label>
+                        <p className="text-xs text-muted-foreground mb-2">Describe the scene in detail ({scene.description.length} chars)</p>
+                        <textarea
+                          placeholder="Describe the scene in detail — include narrative beats, challenges, choices, and outcomes. The more detail you provide, the better the auto-generated chapters will be."
+                          value={scene.description}
+                          onChange={(e) => updateScene(scene.id, { description: e.target.value })}
+                          rows={6}
+                          className="w-full px-4 py-3 bg-white border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20 resize-none"
+                        />
+                        {scene.description.length > 20 && (
+                          <div className="mt-3 flex items-center gap-3">
+                            <button
+                              onClick={() => generateChaptersFromDescription(scene.id)}
+                              disabled={generatingSceneId === scene.id}
+                              className="flex items-center gap-1.5 px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors disabled:opacity-60"
+                            >
+                              {generatingSceneId === scene.id ? (
+                                <>
+                                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                  Generating chapters...
+                                </>
+                              ) : (
+                                <>
+                                  <Sparkles className="w-4 h-4" />
+                                  Generate chapters from description
+                                </>
+                              )}
+                            </button>
+                            <p className="text-xs text-muted-foreground">
+                              Auto-create chapter structure based on your description
+                            </p>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-6">
                         <div>
-                          <label className="block text-sm text-accent font-medium mb-1.5">Turn Taking Rules</label>
-                          <textarea
-                            placeholder="<e.g. the characters must take turns>"
-                            value={chapter.turnTakingRules}
-                            onChange={(e) => updateChapter(chapter.id, { turnTakingRules: e.target.value })}
-                            rows={3}
-                            className="w-full px-4 py-3 bg-white border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20 resize-none"
-                          />
+                          <label className="block text-sm font-semibold text-foreground mb-2">Format</label>
+                          <select
+                            value={scene.format}
+                            onChange={(e) => updateScene(scene.id, { format: e.target.value })}
+                            className="w-full px-4 py-3 bg-muted rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20"
+                          >
+                            <option value="UNSTRUCTURED">UNSTRUCTURED</option>
+                            <option value="STRUCTURED">STRUCTURED</option>
+                            <option value="FREEFORM">FREEFORM</option>
+                          </select>
                         </div>
                         <div>
-                          <label className="block text-sm text-accent font-medium mb-1.5">Progression Criteria</label>
-                          <textarea
-                            placeholder="<e.g. the goal for the characters to accomplish>"
-                            value={chapter.progressionCriteria}
-                            onChange={(e) => updateChapter(chapter.id, { progressionCriteria: e.target.value })}
-                            rows={3}
-                            className="w-full px-4 py-3 bg-white border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20 resize-none"
+                          <label className="block text-sm font-semibold text-foreground mb-1">Max Proactive Streak</label>
+                          <p className="text-xs text-muted-foreground mb-2">Limit bot messages without user action</p>
+                          <input
+                            type="number"
+                            min={1}
+                            max={10}
+                            value={scene.maxProactiveStreak}
+                            onChange={(e) => updateScene(scene.id, { maxProactiveStreak: Number(e.target.value) })}
+                            className="w-full px-4 py-3 bg-white border border-border rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20"
                           />
                         </div>
                       </div>
+                    </div>
 
-                      <div className="border-t border-border pt-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <label className="text-sm font-semibold text-foreground">Suggested Prompts</label>
+                    {/* Chapters */}
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <BookOpen className="w-4 h-4 text-foreground" />
+                          <h3 className="text-sm font-semibold text-foreground">Chapters</h3>
                         </div>
-                        {chapter.suggestedPrompts.length > 0 && (
-                          <div className="space-y-2 mb-3">
-                            {chapter.suggestedPrompts.map((prompt, pIdx) => (
-                              <div key={pIdx} className="flex items-center gap-2">
-                                <input
-                                  type="text"
-                                  placeholder="Enter a suggested prompt..."
-                                  value={prompt}
-                                  onChange={(e) => updateSuggestedPrompt(chapter.id, pIdx, e.target.value)}
-                                  className="flex-1 px-3 py-2 bg-white border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20"
-                                />
-                                <button
-                                  onClick={() => removeSuggestedPrompt(chapter.id, pIdx)}
-                                  className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-danger"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
                         <button
-                          onClick={() => addSuggestedPrompt(chapter.id)}
-                          className="text-sm text-accent hover:underline flex items-center gap-1"
+                          onClick={() => addChapterToScene(scene.id)}
+                          className="flex items-center gap-1 px-3 py-1.5 bg-accent text-white rounded-lg text-xs font-medium hover:bg-accent/90 transition-colors"
                         >
-                          <Plus className="w-3.5 h-3.5" /> Add prompt
+                          <Plus className="w-3.5 h-3.5" />
+                          Add Chapter
                         </button>
                       </div>
 
-                      <div className="border-t border-border pt-4">
-                        <label className="text-sm font-semibold text-foreground">Persona Exclusions</label>
-                        <p className="text-xs text-muted-foreground mt-0.5 mb-2">
-                          Personas that should not participate in this chapter
-                        </p>
-                        <div>
-                          <p className="text-xs text-muted-foreground mb-1.5">
-                            Excluded Personas &middot; <span className="italic">Optional</span>
-                          </p>
-                          <p className="text-[11px] text-muted-foreground mb-1.5">
-                            Select personas to exclude from this chapter
-                          </p>
-                          <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                            <input
-                              type="text"
-                              placeholder="Search personas to exclude..."
-                              className="w-full pl-10 pr-4 py-2.5 bg-white border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20"
-                            />
-                          </div>
-                        </div>
-                      </div>
+                      <div className="space-y-3">
+                        {scene.chapters.map((chapter, chIdx) => (
+                          <div key={chapter.id} className="border border-border rounded-lg overflow-hidden">
+                            <div className="flex items-center justify-between px-4 py-2.5 bg-muted/50">
+                              <button
+                                onClick={() => updateChapterInScene(scene.id, chapter.id, { expanded: !chapter.expanded })}
+                                className="flex items-center gap-2.5 flex-1 text-left"
+                              >
+                                {chapter.expanded ? <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" /> : <ChevronUp className="w-3.5 h-3.5 text-muted-foreground" />}
+                                <span className="w-6 h-6 rounded bg-accent/10 flex items-center justify-center text-[10px] font-semibold text-accent">{chIdx + 1}</span>
+                                <span className="text-sm font-medium text-foreground">{chapter.title || "<Name your chapter>"}</span>
+                              </button>
+                              <div className="flex items-center gap-1.5">
+                                <span className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-medium text-muted-foreground uppercase">{chapter.type}</span>
+                                <button onClick={() => moveChapterInScene(scene.id, chapter.id, "up")} className="p-1 rounded hover:bg-muted text-muted-foreground disabled:opacity-30" disabled={chIdx === 0}><ArrowUp className="w-3.5 h-3.5" /></button>
+                                <button onClick={() => moveChapterInScene(scene.id, chapter.id, "down")} className="p-1 rounded hover:bg-muted text-muted-foreground disabled:opacity-30" disabled={chIdx === scene.chapters.length - 1}><ArrowDown className="w-3.5 h-3.5" /></button>
+                                <button onClick={() => addChapterToScene(scene.id)} className="p-1 rounded hover:bg-muted text-muted-foreground"><Plus className="w-3.5 h-3.5" /></button>
+                                <button onClick={() => removeChapterFromScene(scene.id, chapter.id)} className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-danger disabled:opacity-30" disabled={scene.chapters.length === 1}><Trash2 className="w-3.5 h-3.5" /></button>
+                              </div>
+                            </div>
 
-                      <div className="border-t border-border pt-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <label className="text-sm font-semibold text-foreground">UI Elements</label>
-                          <select className="px-3 py-1.5 bg-muted rounded-lg text-xs text-foreground outline-none">
-                            <option>+ Add element...</option>
-                            <option>Timer</option>
-                            <option>Progress Bar</option>
-                            <option>Quick Replies</option>
-                            <option>Media Carousel</option>
-                          </select>
-                        </div>
-                        <p className="text-xs text-muted-foreground mb-2">No UI elements configured</p>
-                        <select className="w-full px-4 py-2.5 bg-muted rounded-lg text-sm text-foreground outline-none">
-                          <option>Add UI Element</option>
-                          <option>Timer</option>
-                          <option>Progress Bar</option>
-                          <option>Quick Replies</option>
-                          <option>Media Carousel</option>
-                        </select>
+                            {chapter.expanded && (
+                              <div className="px-4 py-4 space-y-4">
+                                <div className="flex gap-3">
+                                  <div className="flex-1">
+                                    <label className="block text-xs text-accent font-medium mb-1">Chapter Title</label>
+                                    <input type="text" placeholder="<Name your chapter>" value={chapter.title} onChange={(e) => updateChapterInScene(scene.id, chapter.id, { title: e.target.value })} className="w-full px-3 py-2.5 bg-white border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20" />
+                                  </div>
+                                  <div className="w-32">
+                                    <label className="block text-xs text-accent font-medium mb-1">Type</label>
+                                    <select value={chapter.type} onChange={(e) => updateChapterInScene(scene.id, chapter.id, { type: e.target.value as Chapter["type"] })} className="w-full px-3 py-2.5 bg-muted rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20">
+                                      <option value="STANDARD">Standard</option>
+                                      <option value="INTRO">Intro</option>
+                                      <option value="OUTRO">Outro</option>
+                                      <option value="BRANCHING">Branching</option>
+                                    </select>
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="block text-xs text-accent font-medium mb-1">Content</label>
+                                  <textarea placeholder="<Describe the arc of the story>" value={chapter.content} onChange={(e) => updateChapterInScene(scene.id, chapter.id, { content: e.target.value })} rows={3} className="w-full px-3 py-2.5 bg-white border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20 resize-none" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                  <div>
+                                    <label className="block text-xs text-accent font-medium mb-1">Turn Taking Rules</label>
+                                    <textarea placeholder="<e.g. the characters must take turns>" value={chapter.turnTakingRules} onChange={(e) => updateChapterInScene(scene.id, chapter.id, { turnTakingRules: e.target.value })} rows={2} className="w-full px-3 py-2.5 bg-white border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20 resize-none" />
+                                  </div>
+                                  <div>
+                                    <label className="block text-xs text-accent font-medium mb-1">Progression Criteria</label>
+                                    <textarea placeholder="<e.g. the goal for the characters to accomplish>" value={chapter.progressionCriteria} onChange={(e) => updateChapterInScene(scene.id, chapter.id, { progressionCriteria: e.target.value })} rows={2} className="w-full px-3 py-2.5 bg-white border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20 resize-none" />
+                                  </div>
+                                </div>
+                                <div className="border-t border-border pt-3">
+                                  <label className="text-xs font-semibold text-foreground">Suggested Prompts</label>
+                                  {chapter.suggestedPrompts.length > 0 && (
+                                    <div className="space-y-1.5 mt-2 mb-2">
+                                      {chapter.suggestedPrompts.map((prompt, pIdx) => (
+                                        <div key={pIdx} className="flex items-center gap-2">
+                                          <input type="text" placeholder="Enter a suggested prompt..." value={prompt} onChange={(e) => updateSuggestedPrompt(scene.id, chapter.id, pIdx, e.target.value)} className="flex-1 px-3 py-1.5 bg-white border border-border rounded-lg text-xs text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20" />
+                                          <button onClick={() => removeSuggestedPrompt(scene.id, chapter.id, pIdx)} className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-danger"><Trash2 className="w-3 h-3" /></button>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                  <button onClick={() => addSuggestedPrompt(scene.id, chapter.id)} className="text-xs text-accent hover:underline flex items-center gap-1 mt-1"><Plus className="w-3 h-3" /> Add prompt</button>
+                                </div>
+                                <div className="border-t border-border pt-3">
+                                  <label className="text-xs font-semibold text-foreground">Persona Exclusions</label>
+                                  <p className="text-[10px] text-muted-foreground mt-0.5 mb-1.5">Personas that should not participate in this chapter</p>
+                                  <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                                    <input type="text" placeholder="Search personas to exclude..." className="w-full pl-9 pr-3 py-2 bg-white border border-border rounded-lg text-xs text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20" />
+                                  </div>
+                                </div>
+                                <div className="border-t border-border pt-3">
+                                  <div className="flex items-center justify-between mb-1.5">
+                                    <label className="text-xs font-semibold text-foreground">UI Elements</label>
+                                    <select className="px-2 py-1 bg-muted rounded text-[10px] text-foreground outline-none">
+                                      <option>+ Add element...</option>
+                                      <option>Timer</option>
+                                      <option>Progress Bar</option>
+                                      <option>Quick Replies</option>
+                                      <option>Media Carousel</option>
+                                    </select>
+                                  </div>
+                                  <p className="text-[10px] text-muted-foreground">No UI elements configured</p>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
                       </div>
                     </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -861,13 +889,14 @@ function Field({ label, helper, children }: { label: string; helper?: string; ch
   );
 }
 
-function CreateSidebarPreview({ form }: { form: { name: string; identity: string; personality: string; communicationStyle: string; goal: string; biography: string; product: string; platform: string } }) {
+function CreateSidebarPreview({ form }: { form: { name: string; identity: string; personality: string; communicationStyle: string; voiceStyle: string; goal: string; biography: string; product: string; platform: string } }) {
   const [copied, setCopied] = useState(false);
 
   const sections = [
     form.identity && `# Identity\n${form.identity}`,
     form.personality && `# Personality\n${form.personality}`,
     form.communicationStyle && `# Communication Style\n${form.communicationStyle}`,
+    form.voiceStyle && `# Voice Style\n${form.voiceStyle}`,
     form.goal && `# Goal\n${form.goal}`,
     form.biography && `# Biography\n${form.biography}`,
   ].filter(Boolean);
@@ -1003,6 +1032,31 @@ const communicationStyleSliders: SliderDimension[] = [
   { label: "Metaphor use", left: "Literal", right: "Figurative", defaultValue: 50 },
 ];
 
+const voiceStyleSuggestions: Suggestion[] = [
+  {
+    title: "Warm & Steady",
+    description: "Warm, grounded vocal quality with a natural, unhurried cadence. Pauses intentionally before important points. Rises slightly in pitch when encouraging, drops lower when being serious or reflective.",
+    presets: { Pace: 35, Warmth: 85, Expressiveness: 45, Intensity: 30 },
+  },
+  {
+    title: "Energetic & Upbeat",
+    description: "Bright, forward vocal energy with an upbeat rhythm. Speaks at a brisk pace with natural emphasis on action words. Voice lifts at the end of suggestions to create momentum. Laughs easily.",
+    presets: { Pace: 80, Warmth: 70, Expressiveness: 90, Intensity: 75 },
+  },
+  {
+    title: "Calm & Measured",
+    description: "Soft, measured delivery with generous pauses between thoughts. Almost meditative in rhythm. Voice stays in a narrow, soothing range — rarely raises volume or pitch. Breathes audibly between phrases.",
+    presets: { Pace: 15, Warmth: 60, Expressiveness: 20, Intensity: 10 },
+  },
+];
+
+const voiceStyleSliders: SliderDimension[] = [
+  { label: "Pace", left: "Slow", right: "Fast", defaultValue: 50 },
+  { label: "Warmth", left: "Cool", right: "Warm", defaultValue: 50 },
+  { label: "Expressiveness", left: "Flat", right: "Animated", defaultValue: 50 },
+  { label: "Intensity", left: "Gentle", right: "Intense", defaultValue: 50 },
+];
+
 function describeLevel(value: number, low: string, mid: string, high: string): string {
   if (value <= 25) return low;
   if (value <= 45) return `somewhat ${mid.toLowerCase()}`;
@@ -1027,6 +1081,15 @@ function generateCommStyleFromSliders(values: Record<string, number>): string {
   const metaphor = describeLevel(values["Metaphor use"] ?? 50, "Literal and straightforward — avoids figurative language", "Occasionally uses metaphors", "Figurative and vivid — frequently uses metaphors, analogies, and storytelling");
 
   return `${formality}. ${length}. ${questioning}. ${metaphor}.`;
+}
+
+function generateVoiceStyleFromSliders(values: Record<string, number>): string {
+  const pace = describeLevel(values.Pace ?? 50, "Slow and deliberate — takes time between thoughts", "Moderate pacing", "Quick and energetic — keeps momentum high");
+  const warmth = describeLevel(values.Warmth ?? 50, "Cool and neutral — emotionally restrained", "Balanced warmth", "Warm and inviting — voice conveys genuine care");
+  const expressiveness = describeLevel(values.Expressiveness ?? 50, "Flat and even — minimal vocal variation", "Moderately expressive", "Highly animated — wide pitch range and dynamic emphasis");
+  const intensity = describeLevel(values.Intensity ?? 50, "Gentle and soft-spoken", "Moderate intensity", "Intense and commanding — speaks with conviction and force");
+
+  return `${pace}. ${warmth}. ${expressiveness}. ${intensity}.`;
 }
 
 function PromptFieldWithSuggestions({
@@ -1060,6 +1123,7 @@ function PromptFieldWithSuggestions({
   const generateFromSliders = (values: Record<string, number>) => {
     if (label === "Personality") return generatePersonalityFromSliders(values);
     if (label === "Communication Style") return generateCommStyleFromSliders(values);
+    if (label === "Voice Style") return generateVoiceStyleFromSliders(values);
     return "";
   };
 

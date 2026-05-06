@@ -39,7 +39,7 @@ export const characters: Character[] = [
       { version: 3, createdBy: "Andy Pratt", createdAt: "2026-04-28T09:15:00Z", summary: "Updated personality based on eval feedback" },
     ],
     configurations: [
-      { id: "cfg-1", product: "C50", platform: "1P Characters", promptConstraints: "Keep responses under 3 sentences. Avoid clinical terminology.", uiOverlay: "vibe-call", rubricSetId: "rub-1" },
+      { id: "cfg-1", product: "Meta AI", platform: "1P Characters", promptConstraints: "Keep responses under 3 sentences. Avoid clinical terminology.", uiOverlay: "vibe-call", rubricSetId: "rub-1" },
     ],
     scenes: [],
     createdAt: "2026-04-15T10:00:00Z",
@@ -64,7 +64,7 @@ export const characters: Character[] = [
       { version: 2, createdBy: "Marcus Rivera", createdAt: "2026-04-25T16:00:00Z", summary: "Added storytelling constraints, reduced tangent tendency" },
     ],
     configurations: [
-      { id: "cfg-3", product: "C50", platform: "1P Characters", promptConstraints: "Focus on world history. Avoid modern political commentary.", uiOverlay: "vibe-call", rubricSetId: "rub-1" },
+      { id: "cfg-3", product: "Meta AI", platform: "1P Characters", promptConstraints: "Focus on world history. Avoid modern political commentary.", uiOverlay: "vibe-call", rubricSetId: "rub-1" },
     ],
     scenes: [],
     createdAt: "2026-04-10T08:00:00Z",
@@ -113,7 +113,7 @@ export const characters: Character[] = [
       { version: 4, createdBy: "Sarah Chen", createdAt: "2026-04-27T15:45:00Z", summary: "Updated based on eval — improved handling of dietary restrictions" },
     ],
     configurations: [
-      { id: "cfg-4", product: "CiV", platform: "C50", promptConstraints: "Keep recipes simple (under 5 ingredients). No professional techniques.", uiOverlay: "metagen", rubricSetId: "rub-2" },
+      { id: "cfg-4", product: "Meta AI", platform: "Characters in Vibes", promptConstraints: "Keep recipes simple (under 5 ingredients). No professional techniques.", uiOverlay: "metagen", rubricSetId: "rub-2" },
     ],
     scenes: [],
     createdAt: "2026-04-05T09:00:00Z",
@@ -137,7 +137,7 @@ export const characters: Character[] = [
       { version: 1, createdBy: "Marcus Rivera", createdAt: "2026-05-01T14:00:00Z", summary: "Initial character creation" },
     ],
     configurations: [
-      { id: "cfg-5", product: "C50", platform: "1P Characters", promptConstraints: "Always check for injuries/limitations first. No extreme exercises.", uiOverlay: "vibe-call", rubricSetId: null },
+      { id: "cfg-5", product: "Meta AI", platform: "1P Characters", promptConstraints: "Always check for injuries/limitations first. No extreme exercises.", uiOverlay: "vibe-call", rubricSetId: null },
     ],
     scenes: [],
     createdAt: "2026-05-01T14:00:00Z",
@@ -165,7 +165,7 @@ export const characters: Character[] = [
       { version: 5, createdBy: "Andy Pratt", createdAt: "2026-04-29T10:00:00Z", summary: "Eval-driven update — improved handling of user hesitation in crisis chapters" },
     ],
     configurations: [
-      { id: "cfg-6", product: "C50", platform: "1P Characters", promptConstraints: "Maintain narrative tension. Never break the fourth wall. Adapt pacing to user engagement level.", uiOverlay: "vibe-call", rubricSetId: "rub-1" },
+      { id: "cfg-6", product: "Meta AI", platform: "1P Characters", promptConstraints: "Maintain narrative tension. Never break the fourth wall. Adapt pacing to user engagement level.", uiOverlay: "vibe-call", rubricSetId: "rub-1" },
     ],
     scenes: [
       {
@@ -263,8 +263,8 @@ export const callTestSessions: CallTestSession[] = [
 export const rubrics: Rubric[] = [
   {
     id: "rub-1",
-    name: "C50 1P Character Quality",
-    project: "C50",
+    name: "1P Character Quality",
+    project: "Meta AI",
     platform: "1P Characters",
     criteria: [
       { id: "rc-1", name: "Persona Consistency", description: "Character stays in persona throughout the conversation without breaking character", weight: 25 },
@@ -279,11 +279,11 @@ export const rubrics: Rubric[] = [
   },
   {
     id: "rub-2",
-    name: "CiV Conversational Quality",
-    project: "CiV",
-    platform: "C50",
+    name: "Characters in Vibes Quality",
+    project: "Meta AI",
+    platform: "Characters in Vibes",
     criteria: [
-      { id: "rc-6", name: "Playfulness", description: "Character maintains a playful and engaging tone appropriate for the CiV context", weight: 25 },
+      { id: "rc-6", name: "Playfulness", description: "Character maintains a playful and engaging tone appropriate for Characters in Vibes", weight: 25 },
       { id: "rc-7", name: "Brevity", description: "Responses are concise and punchy, suitable for mobile interaction", weight: 20 },
       { id: "rc-8", name: "Cultural Sensitivity", description: "Character demonstrates awareness and respect for diverse cultural contexts", weight: 20 },
       { id: "rc-9", name: "Recovery from Confusion", description: "Character gracefully handles misunderstandings or off-topic inputs", weight: 20 },
@@ -301,7 +301,7 @@ export const evalRuns: EvalRun[] = [
     characterId: "char-1",
     characterName: "Zara",
     rubricId: "rub-1",
-    rubricName: "C50 1P Character Quality",
+    rubricName: "1P Character Quality",
     version: 3,
     status: "complete",
     llmScores: { "rc-1": 92, "rc-2": 85, "rc-3": 78, "rc-4": 88, "rc-5": 82 },
@@ -315,7 +315,7 @@ export const evalRuns: EvalRun[] = [
     characterId: "char-4",
     characterName: "Chef Amara",
     rubricId: "rub-2",
-    rubricName: "CiV Conversational Quality",
+    rubricName: "Characters in Vibes Quality",
     version: 4,
     status: "in_progress",
     llmScores: { "rc-6": 90, "rc-7": 75, "rc-8": 95, "rc-9": 82, "rc-10": 88 },
@@ -329,7 +329,7 @@ export const evalRuns: EvalRun[] = [
     characterId: "char-2",
     characterName: "Professor Wick",
     rubricId: "rub-1",
-    rubricName: "C50 1P Character Quality",
+    rubricName: "1P Character Quality",
     version: 2,
     status: "pending",
     llmScores: {},
@@ -343,8 +343,8 @@ export const evalRuns: EvalRun[] = [
 export const goldenSets: GoldenSet[] = [
   {
     id: "gs-1",
-    name: "C50 Life Coach Benchmark",
-    project: "C50",
+    name: "1P Life Coach Benchmark",
+    project: "Meta AI",
     conversations: [
       {
         id: "gc-1",
@@ -362,7 +362,9 @@ export const goldenSets: GoldenSet[] = [
   },
 ];
 
-export const products = ["C50", "CiV", "Horizon", "WhatsApp"];
-export const platforms = ["1P Characters", "C50", "Instagram", "WhatsApp"];
+export const apps = ["Facebook", "Hatch", "Instagram", "Meta AI", "WhatsApp"];
+export const workstreams = ["1P Characters", "AI You", "Characters in Vibes", "Hatch Assistants"];
+export const products = apps;
+export const platforms = workstreams;
 export const models = ["Pumpkin", "Avocado"];
 export const uiOverlays = ["vibe-call", "metagen", "minimal", "custom"];

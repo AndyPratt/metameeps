@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { evalRuns, rubrics, characters, goldenSets, products, platforms } from "@/lib/mock-data";
+import { evalRuns, rubrics, characters, goldenSets, apps, workstreams } from "@/lib/mock-data";
 import {
   BarChart3,
   Plus,
@@ -282,17 +282,17 @@ export default function EvaluatePage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-muted-foreground mb-1.5">Project</label>
+                    <label className="block text-xs font-medium text-muted-foreground mb-1.5">App</label>
                     <select className="w-full px-3 py-2.5 bg-white rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20 border border-border">
-                      <option value="">Select project...</option>
-                      {products.map((p) => <option key={p} value={p}>{p}</option>)}
+                      <option value="">Select app...</option>
+                      {apps.map((a) => <option key={a} value={a}>{a}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-muted-foreground mb-1.5">Platform</label>
+                    <label className="block text-xs font-medium text-muted-foreground mb-1.5">Workstream</label>
                     <select className="w-full px-3 py-2.5 bg-white rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20 border border-border">
-                      <option value="">Select platform...</option>
-                      {platforms.map((p) => <option key={p} value={p}>{p}</option>)}
+                      <option value="">Select workstream...</option>
+                      {workstreams.map((w) => <option key={w} value={w}>{w}</option>)}
                     </select>
                   </div>
                 </div>

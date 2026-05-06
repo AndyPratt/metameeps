@@ -80,6 +80,25 @@ export default function CallTestPage() {
                   </div>
 
                   <div>
+                    <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Appearance</label>
+                    <select className="w-full px-3 py-2.5 bg-muted rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20">
+                      <option>Default</option>
+                      <option>Outdoor Adventure</option>
+                    </select>
+                  </div>
+
+                  {character?.configurations[0]?.platform === "1P Characters" && character.scenes.length > 0 && (
+                    <div>
+                      <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Scene</label>
+                      <select className="w-full px-3 py-2.5 bg-muted rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20">
+                        {character.scenes.map((s) => (
+                          <option key={s.id} value={s.id}>{s.title || "Untitled Scene"}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  <div>
                     <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Model</label>
                     <select
                       value={settings.model}

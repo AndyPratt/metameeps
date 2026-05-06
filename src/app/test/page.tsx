@@ -103,9 +103,45 @@ export default function TestPage() {
         {activeTab === "overview" && (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-8">
-              <StatCard icon={MessageSquare} label="Dialogue Tests" value={dialogueTests.length} />
               <StatCard icon={Phone} label="Call Sessions" value={callTestSessions.length} />
+              <StatCard icon={MessageSquare} label="Dialogue Tests" value={dialogueTests.length} />
             </div>
+
+            <section className="mb-10">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-base font-semibold text-foreground">Recent Call Sessions</h2>
+                <Link href="/test/call" className="text-sm text-accent hover:underline">View all</Link>
+              </div>
+              <div className="space-y-3">
+                {callTestSessions.map((session) => {
+                  const character = characters.find((c) => c.id === session.characterId);
+                  return (
+                    <div key={session.id} className="border border-border rounded-xl p-5 hover:border-accent/30 transition-colors">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center text-sm font-semibold text-accent">
+                            {character?.name[0]}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-foreground">{character?.name}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Model: {session.model} &middot; {Math.floor(session.duration / 60)}:{String(session.duration % 60).padStart(2, "0")} &middot; {session.settings.uiOverlay}
+                            </p>
+                          </div>
+                        </div>
+                        <span className="text-xs text-muted-foreground">{new Date(session.createdAt).toLocaleDateString()}</span>
+                      </div>
+                      {session.llmAnalysis && (
+                        <div className="bg-muted rounded-lg p-3">
+                          <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1">LLM Analysis</p>
+                          <p className="text-xs text-foreground line-clamp-2">{session.llmAnalysis}</p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
 
             <section className="mb-10">
               <div className="flex items-center justify-between mb-4">
@@ -153,41 +189,6 @@ export default function TestPage() {
               </div>
             </section>
 
-            <section>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-base font-semibold text-foreground">Recent Call Sessions</h2>
-                <Link href="/test/call" className="text-sm text-accent hover:underline">View all</Link>
-              </div>
-              <div className="space-y-3">
-                {callTestSessions.map((session) => {
-                  const character = characters.find((c) => c.id === session.characterId);
-                  return (
-                    <div key={session.id} className="border border-border rounded-xl p-5 hover:border-accent/30 transition-colors">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center text-sm font-semibold text-accent">
-                            {character?.name[0]}
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-foreground">{character?.name}</p>
-                            <p className="text-xs text-muted-foreground">
-                              Model: {session.model} &middot; {Math.floor(session.duration / 60)}:{String(session.duration % 60).padStart(2, "0")} &middot; {session.settings.uiOverlay}
-                            </p>
-                          </div>
-                        </div>
-                        <span className="text-xs text-muted-foreground">{new Date(session.createdAt).toLocaleDateString()}</span>
-                      </div>
-                      {session.llmAnalysis && (
-                        <div className="bg-muted rounded-lg p-3">
-                          <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1">LLM Analysis</p>
-                          <p className="text-xs text-foreground line-clamp-2">{session.llmAnalysis}</p>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
           </>
         )}
 

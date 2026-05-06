@@ -605,54 +605,38 @@ function VoiceEmbodimentTab({ character, voices: allVoices }: { character: typeo
         )}
       </div>
 
-      {/* Appearance */}
+      {/* Appearances */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Appearance</h3>
+          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Appearances</h3>
           <button
             onClick={() => setEditingImage(!editingImage)}
             className="text-xs text-accent hover:underline"
           >
-            {editingImage ? "Done" : "Edit appearance"}
+            {editingImage ? "Done" : "Manage appearances"}
           </button>
         </div>
 
         {!editingImage ? (
-          <div className="space-y-4">
-            <div className="border border-border rounded-xl overflow-hidden">
-              <div className="aspect-[4/3] bg-muted flex items-center justify-center">
-                <div className="text-center">
-                  <ImageIcon className="w-10 h-10 text-muted-foreground/20 mx-auto mb-2" />
-                  <p className="text-xs text-muted-foreground">{hasImage ? "Character appearance" : "No appearance set"}</p>
+          <div className="space-y-3">
+            {["Default", "Outdoor Adventure"].map((name, i) => (
+              <div key={name} className={`border rounded-xl overflow-hidden cursor-pointer transition-colors ${i === 0 ? "border-accent" : "border-border hover:border-accent/30"}`}>
+                <div className="flex items-center gap-3 p-3">
+                  <div className="w-16 h-20 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                    <ImageIcon className="w-6 h-6 text-muted-foreground/30" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground">{name}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {i === 0 ? "Primary appearance for testing" : "Alternative look for outdoor scenes"}
+                    </p>
+                  </div>
+                  {i === 0 && (
+                    <span className="px-1.5 py-0.5 bg-accent/10 text-accent text-[10px] font-semibold rounded uppercase shrink-0">Active</span>
+                  )}
                 </div>
               </div>
-              <div className="px-4 py-3 border-t border-border">
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                  <span>Look: <span className="text-foreground font-medium">Casual</span></span>
-                  <span>Background: <span className="text-foreground font-medium">Cozy Living Room</span></span>
-                </div>
-              </div>
-            </div>
-            <div>
-              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Looks</p>
-              <div className="flex gap-2">
-                {["Casual", "Professional", "Sporty"].map((look, i) => (
-                  <div key={look} className={`w-14 h-14 rounded-lg bg-muted flex items-center justify-center text-[10px] font-medium cursor-pointer transition-colors ${i === 0 ? "border-2 border-accent text-accent" : "border border-border text-muted-foreground hover:border-accent/30"}`}>
-                    {look.slice(0, 3)}
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Backgrounds</p>
-              <div className="flex gap-2">
-                {["Living Room", "Coffee Shop", "City Park"].map((bg, i) => (
-                  <div key={bg} className={`w-20 h-12 rounded-lg bg-muted flex items-center justify-center cursor-pointer transition-colors ${i === 0 ? "border-2 border-accent" : "border border-border hover:border-accent/30"}`}>
-                    <Mountain className="w-4 h-4 text-muted-foreground/30" />
-                  </div>
-                ))}
-              </div>
-            </div>
+            ))}
           </div>
         ) : (
           <EmbodimentUploader type="character" />

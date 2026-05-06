@@ -1012,7 +1012,7 @@ function CreateSidebarPreview({ form }: { form: Record<string, string> }) {
   const newSections = prompt.split("\n\n");
 
   return (
-    <div className="w-full lg:w-[360px] border-t lg:border-t-0 lg:border-l border-border lg:sticky lg:top-[120px] lg:self-start flex flex-col lg:max-h-[calc(100vh-120px)]">
+    <div className="w-full lg:w-[440px] border-t lg:border-t-0 lg:border-l border-border lg:sticky lg:top-[120px] lg:self-start flex flex-col lg:max-h-[calc(100vh-120px)]">
       <div className="px-5 py-3 border-b border-border shrink-0">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
@@ -1111,8 +1111,8 @@ function CreateSidebarPreview({ form }: { form: Record<string, string> }) {
                       const isUnchanged = prod !== undefined && draft !== undefined && prod === draft;
 
                       return (
-                        <div key={key} className="text-xs">
-                          <div className="flex items-center gap-1.5 mb-1">
+                        <div key={key} className="text-sm">
+                          <div className="flex items-center gap-1.5 mb-1.5">
                             <span className="font-semibold text-foreground">{key}</span>
                             {isNew && <span className="px-1.5 py-0.5 bg-success/10 text-success rounded text-[9px] font-semibold uppercase">New</span>}
                             {isRemoved && <span className="px-1.5 py-0.5 bg-danger/10 text-danger rounded text-[9px] font-semibold uppercase">Removed</span>}
@@ -1121,28 +1121,28 @@ function CreateSidebarPreview({ form }: { form: Record<string, string> }) {
                           </div>
                           {isChanged && (
                             <div className="space-y-1.5">
-                              <div className="bg-danger/5 border border-danger/10 rounded-md p-2">
-                                <p className="text-[10px] text-danger font-medium mb-0.5">Production</p>
-                                <p className="text-foreground font-mono leading-relaxed">{prod}</p>
+                              <div className="bg-danger/5 border border-danger/10 rounded-md p-3">
+                                <p className="text-[10px] text-danger font-medium mb-1">Production</p>
+                                <p className="text-sm text-foreground font-mono leading-relaxed whitespace-pre-wrap">{prod}</p>
                               </div>
-                              <div className="bg-success/5 border border-success/10 rounded-md p-2">
-                                <p className="text-[10px] text-success font-medium mb-0.5">Draft</p>
-                                <p className="text-foreground font-mono leading-relaxed">{draft}</p>
+                              <div className="bg-success/5 border border-success/10 rounded-md p-3">
+                                <p className="text-[10px] text-success font-medium mb-1">Draft</p>
+                                <p className="text-sm text-foreground font-mono leading-relaxed whitespace-pre-wrap">{draft}</p>
                               </div>
                             </div>
                           )}
                           {isNew && (
-                            <div className="bg-success/5 border border-success/10 rounded-md p-2">
-                              <p className="text-foreground font-mono leading-relaxed">{draft}</p>
+                            <div className="bg-success/5 border border-success/10 rounded-md p-3">
+                              <p className="text-sm text-foreground font-mono leading-relaxed whitespace-pre-wrap">{draft}</p>
                             </div>
                           )}
                           {isRemoved && (
-                            <div className="bg-danger/5 border border-danger/10 rounded-md p-2">
-                              <p className="text-foreground font-mono leading-relaxed line-through opacity-60">{prod}</p>
+                            <div className="bg-danger/5 border border-danger/10 rounded-md p-3">
+                              <p className="text-sm text-foreground font-mono leading-relaxed whitespace-pre-wrap line-through opacity-60">{prod}</p>
                             </div>
                           )}
                           {isUnchanged && (
-                            <p className="text-muted-foreground font-mono leading-relaxed pl-2">{prod}</p>
+                            <p className="text-sm text-muted-foreground font-mono leading-relaxed whitespace-pre-wrap pl-3">{prod}</p>
                           )}
                         </div>
                       );

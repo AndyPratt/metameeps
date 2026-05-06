@@ -940,10 +940,45 @@ Warm and steady with a natural cadence. Rises slightly in pitch when encouraging
 # Biography
 Zara is a seasoned life coach with a background in psychology and improv comedy. She believes that laughter and self-awareness are the two most powerful tools for personal growth.`;
 
+const mockVersionPrompts: Record<string, string> = {
+  "v2": `# Name
+Zara
+
+# Purpose
+Help users gain clarity on personal decisions through guided self-reflection.
+
+# Identity
+A witty life coach who helps users navigate personal challenges with humor.
+
+# Personality
+Warm, insightful, occasionally sarcastic but always kind.
+
+# Communication Style
+Conversational and casual. Uses rhetorical questions to provoke thought.
+
+# Biography
+Zara is a life coach with a background in psychology and improv comedy.`,
+  "v1": `# Name
+Zara
+
+# Identity
+A life coach who helps users with personal challenges.
+
+# Personality
+Warm and insightful. Kind and supportive.
+
+# Communication Style
+Conversational and casual.
+
+# Biography
+Zara is a life coach with a background in psychology.`,
+};
+
 function CreateSidebarPreview({ form }: { form: Record<string, string> }) {
   const [copied, setCopied] = useState(false);
   const [mode, setMode] = useState<"prompt" | "compare">("prompt");
-  const [productionLoaded, setProductionLoaded] = useState(false);
+  const [compareSource, setCompareSource] = useState<string>("production");
+  const [sourceLoaded, setSourceLoaded] = useState(false);
   const is1P = form.platform === "1P Characters";
 
   const sections = is1P ? [
@@ -982,13 +1017,17 @@ function CreateSidebarPreview({ form }: { form: Record<string, string> }) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleLoadProduction = () => {
-    setProductionLoaded(true);
+  const handleLoadSource = () => {
+    setSourceLoaded(true);
     setMode("compare");
   };
 
-  const prodSections = mockProductionPrompt.split("\n\n");
+  const comparePrompt = compareSource === "production"
+    ? mockProductionPrompt
+    : mockVersionPrompts[compareSource] || "";
+  const compareSections = comparePrompt.split("\n\n");
   const newSections = prompt.split("\n\n");
+  const compareLabel = compareSource === "production" ? "Production" : compareSource.toUpperCase();
 
   return (
     <div className="w-full lg:w-[440px] border-t lg:border-t-0 lg:border-l border-border lg:sticky lg:top-[120px] lg:self-start flex flex-col lg:max-h-[calc(100vh-120px)]">
@@ -1004,7 +1043,7 @@ function CreateSidebarPreview({ form }: { form: Record<string, string> }) {
               System Prompt
             </button>
             <button
-              onClick={() => productionLoaded ? setMode("compare") : handleLoadProduction()}
+              onClick={() => sourceLoaded ? setMode("compare") : handleLoadSource()}
               className={`px-2.5 py-1 rounded-md text-xs transition-colors ${
                 mode === "compare" ? "bg-white shadow-sm text-foreground font-medium" : "text-muted-foreground"
               }`}
@@ -1051,43 +1090,71 @@ function CreateSidebarPreview({ form }: { form: Record<string, string> }) {
 
       {mode === "compare" && (
         <>
-          {!productionLoaded ? (
+          {!sourceLoaded ? (
             <div className="flex-1 flex flex-col items-center justify-center p-5 text-center">
-              <Download className="w-8 h-8 text-muted-foreground/20 mb-3" />
-              <p className="text-sm font-medium text-foreground mb-1">Pull production prompt</p>
-              <p className="text-xs text-muted-foreground mb-4">Load the current production prompt to compare with your draft</p>
-              <button
-                onClick={handleLoadProduction}
-                className="flex items-center gap-1.5 px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors"
-              >
-                <Download className="w-4 h-4" />
-                Pull from production
-              </button>
+              <GitCompare className="w-8 h-8 text-muted-foreground/20 mb-3" />
+              <p className="text-sm font-medium text-foreground mb-1">Compare your draft</p>
+              <p className="text-xs text-muted-foreground mb-4">Select a source to compare against your current prompt</p>
+              <div className="space-y-2 w-full max-w-[200px]">
+                <button
+                  onClick={() => { setCompareSource("production"); handleLoadSource(); }}
+                  className="w-full flex items-center gap-2 px-4 py-2.5 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors justify-center"
+                >
+                  <Download className="w-4 h-4" />
+                  Production prompt
+                </button>
+                <button
+                  onClick={() => { setCompareSource("v2"); handleLoadSource(); }}
+                  className="w-full flex items-center gap-2 px-4 py-2.5 bg-muted text-foreground rounded-lg text-sm hover:bg-border transition-colors justify-center"
+                >
+                  Version 2
+                </button>
+                <button
+                  onClick={() => { setCompareSource("v1"); handleLoadSource(); }}
+                  className="w-full flex items-center gap-2 px-4 py-2.5 bg-muted text-foreground rounded-lg text-sm hover:bg-border transition-colors justify-center"
+                >
+                  Version 1
+                </button>
+              </div>
             </div>
           ) : (
             <>
+              <div className="px-4 py-2.5 border-b border-border shrink-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Comparing with:</span>
+                  <select
+                    value={compareSource}
+                    onChange={(e) => setCompareSource(e.target.value)}
+                    className="px-2 py-1 bg-muted rounded-md text-xs text-foreground outline-none"
+                  >
+                    <option value="production">Production</option>
+                    <option value="v2">Version 2</option>
+                    <option value="v1">Version 1</option>
+                  </select>
+                </div>
+              </div>
               <div className="flex-1 overflow-y-auto">
                 <div className="p-4 space-y-4">
                   {(() => {
-                    const prodMap = new Map<string, string>();
-                    prodSections.forEach((s) => {
+                    const sourceMap = new Map<string, string>();
+                    compareSections.forEach((s) => {
                       const match = s.match(/^# (.+)\n([\s\S]*)$/);
-                      if (match) prodMap.set(match[1], match[2]);
+                      if (match) sourceMap.set(match[1], match[2]);
                     });
                     const newMap = new Map<string, string>();
                     newSections.forEach((s) => {
                       const match = s.match(/^# (.+)\n([\s\S]*)$/);
                       if (match) newMap.set(match[1], match[2]);
                     });
-                    const allKeys = Array.from(new Set([...prodMap.keys(), ...newMap.keys()]));
+                    const allKeys = Array.from(new Set([...sourceMap.keys(), ...newMap.keys()]));
 
                     return allKeys.map((key) => {
-                      const prod = prodMap.get(key);
+                      const source = sourceMap.get(key);
                       const draft = newMap.get(key);
-                      const isNew = prod === undefined && draft !== undefined;
-                      const isRemoved = prod !== undefined && draft === undefined;
-                      const isChanged = prod !== undefined && draft !== undefined && prod !== draft;
-                      const isUnchanged = prod !== undefined && draft !== undefined && prod === draft;
+                      const isNew = source === undefined && draft !== undefined;
+                      const isRemoved = source !== undefined && draft === undefined;
+                      const isChanged = source !== undefined && draft !== undefined && source !== draft;
+                      const isUnchanged = source !== undefined && draft !== undefined && source === draft;
 
                       return (
                         <div key={key} className="text-sm">
@@ -1101,8 +1168,8 @@ function CreateSidebarPreview({ form }: { form: Record<string, string> }) {
                           {isChanged && (
                             <div className="space-y-1.5">
                               <div className="bg-danger/5 border border-danger/10 rounded-md p-3">
-                                <p className="text-[10px] text-danger font-medium mb-1">Production</p>
-                                <p className="text-sm text-foreground font-mono leading-relaxed whitespace-pre-wrap">{prod}</p>
+                                <p className="text-[10px] text-danger font-medium mb-1">{compareLabel}</p>
+                                <p className="text-sm text-foreground font-mono leading-relaxed whitespace-pre-wrap">{source}</p>
                               </div>
                               <div className="bg-success/5 border border-success/10 rounded-md p-3">
                                 <p className="text-[10px] text-success font-medium mb-1">Draft</p>
@@ -1117,11 +1184,11 @@ function CreateSidebarPreview({ form }: { form: Record<string, string> }) {
                           )}
                           {isRemoved && (
                             <div className="bg-danger/5 border border-danger/10 rounded-md p-3">
-                              <p className="text-sm text-foreground font-mono leading-relaxed whitespace-pre-wrap">{prod}</p>
+                              <p className="text-sm text-foreground font-mono leading-relaxed whitespace-pre-wrap">{source}</p>
                             </div>
                           )}
                           {isUnchanged && (
-                            <p className="text-sm text-muted-foreground font-mono leading-relaxed whitespace-pre-wrap pl-3">{prod}</p>
+                            <p className="text-sm text-muted-foreground font-mono leading-relaxed whitespace-pre-wrap pl-3">{source}</p>
                           )}
                         </div>
                       );
@@ -1131,13 +1198,13 @@ function CreateSidebarPreview({ form }: { form: Record<string, string> }) {
               </div>
               <div className="px-5 py-3 border-t border-border shrink-0 flex items-center justify-between">
                 <p className="text-[11px] text-muted-foreground">
-                  Comparing with production
+                  Comparing with {compareLabel.toLowerCase()}
                 </p>
                 <button
-                  onClick={() => handleCopy(mockProductionPrompt)}
+                  onClick={() => handleCopy(comparePrompt)}
                   className="flex items-center gap-1 px-2 py-1 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                 >
-                  <Copy className="w-3 h-3" /> Copy production
+                  <Copy className="w-3 h-3" /> Copy {compareLabel.toLowerCase()}
                 </button>
               </div>
             </>

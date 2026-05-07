@@ -106,19 +106,17 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
                 {character.name[0]}
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-2xl font-semibold text-foreground">{character.name}</h1>
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase ${
-                    character.status === "published" ? "bg-success/10 text-success" : "bg-warning/10 text-warning"
-                  }`}>
-                    {character.status}
-                  </span>
-                </div>
+                <h1 className="text-2xl font-semibold text-foreground">{character.name}</h1>
                 <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1"><User className="w-3.5 h-3.5" />{character.createdBy}</span>
                   <span className="flex items-center gap-1">
                     v{viewingVersion}
                     {isPreviewingOld && <span className="text-warning text-xs">(viewing)</span>}
+                  </span>
+                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase ${
+                    character.status === "published" ? "bg-success/10 text-success" : "bg-muted text-muted-foreground"
+                  }`}>
+                    {character.status}
                   </span>
                   <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{new Date(character.updatedAt).toLocaleDateString()}</span>
                   {character.clonedFrom && <span className="text-xs italic">Cloned</span>}
@@ -347,7 +345,7 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
                             </span>
                           )}
                           <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase ${
-                            v.status === "published" ? "bg-success/10 text-success" : "bg-warning/10 text-warning"
+                            v.status === "published" ? "bg-success/10 text-success" : "bg-muted text-muted-foreground"
                           }`}>
                             {v.status}
                           </span>

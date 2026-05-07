@@ -143,17 +143,18 @@ export default function CharactersPage() {
                   {character.name[0]}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors">
-                      {character.name}
-                    </h3>
+                  <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors">
+                    {character.name}
+                  </h3>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-xs text-muted-foreground">v{character.version}</span>
                     <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase ${
-                      character.status === "published" ? "bg-success/10 text-success" : "bg-warning/10 text-warning"
+                      character.status === "published" ? "bg-success/10 text-success" : "bg-muted text-muted-foreground"
                     }`}>
                       {character.status}
                     </span>
+                    {character.clonedFrom && <span className="text-xs text-muted-foreground italic">cloned</span>}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">v{character.version}{character.clonedFrom ? " · cloned" : ""}</p>
                 </div>
               </div>
               <p className="text-sm text-muted-foreground line-clamp-2 mb-4">

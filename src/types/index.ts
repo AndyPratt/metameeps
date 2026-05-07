@@ -12,6 +12,8 @@ export interface Character {
   scene: string | null;
   createdBy: string;
   version: number;
+  status: "draft" | "published";
+  clonedFrom?: string;
   versions: CharacterVersion[];
   configurations: CharacterConfiguration[];
   scenes: CharacterScene[];
@@ -40,6 +42,7 @@ export interface CharacterVersion {
   createdBy: string;
   createdAt: string;
   summary: string;
+  status: "draft" | "published";
 }
 
 export interface CharacterConfiguration {

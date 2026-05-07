@@ -27,6 +27,8 @@ import {
   Copy,
   FileText,
   Mountain,
+  Upload,
+  GitBranch,
 } from "lucide-react";
 
 export default function CharacterDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -104,7 +106,14 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
                 {character.name[0]}
               </div>
               <div>
-                <h1 className="text-2xl font-semibold text-foreground">{character.name}</h1>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-2xl font-semibold text-foreground">{character.name}</h1>
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase ${
+                    character.status === "published" ? "bg-success/10 text-success" : "bg-warning/10 text-warning"
+                  }`}>
+                    {character.status}
+                  </span>
+                </div>
                 <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1"><User className="w-3.5 h-3.5" />{character.createdBy}</span>
                   <span className="flex items-center gap-1">
@@ -112,6 +121,7 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
                     {isPreviewingOld && <span className="text-warning text-xs">(viewing)</span>}
                   </span>
                   <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{new Date(character.updatedAt).toLocaleDateString()}</span>
+                  {character.clonedFrom && <span className="text-xs italic">Cloned</span>}
                 </div>
               </div>
             </div>
@@ -122,11 +132,17 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
                   className="px-3 py-2 bg-success text-white rounded-lg text-sm font-medium hover:bg-success/90 transition-colors flex items-center gap-1.5"
                 >
                   <Save className="w-3.5 h-3.5" />
-                  Save as v{character.version + 1}
+                  Save Draft v{character.version + 1}
                 </button>
               )}
               {!isPreviewingOld && (
                 <>
+                  {character.status === "draft" && (
+                    <button className="px-3 py-2 bg-success text-white rounded-lg text-sm font-medium hover:bg-success/90 transition-colors flex items-center gap-1.5">
+                      <Upload className="w-3.5 h-3.5" />
+                      Publish
+                    </button>
+                  )}
                   <button
                     onClick={() => setHasEdits(true)}
                     className="px-3 py-2 bg-muted rounded-lg text-sm text-foreground hover:bg-border transition-colors flex items-center gap-1.5"
@@ -134,12 +150,13 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
                     <Edit3 className="w-3.5 h-3.5" />
                     Edit
                   </button>
-                  <Link href={`/test/dialogue?character=${id}`} className="px-3 py-2 bg-muted rounded-lg text-sm text-foreground hover:bg-border transition-colors">
-                    Test Dialogue
-                  </Link>
+                  <button className="px-3 py-2 bg-muted rounded-lg text-sm text-foreground hover:bg-border transition-colors flex items-center gap-1.5">
+                    <GitBranch className="w-3.5 h-3.5" />
+                    New Version
+                  </button>
                   <Link href={`/test/call?character=${id}`} className="px-3 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors flex items-center gap-1.5">
                     <Play className="w-3.5 h-3.5" />
-                    Start Call
+                    Test
                   </Link>
                 </>
               )}
@@ -329,6 +346,11 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
                               Current
                             </span>
                           )}
+                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase ${
+                            v.status === "published" ? "bg-success/10 text-success" : "bg-warning/10 text-warning"
+                          }`}>
+                            {v.status}
+                          </span>
                         </div>
                         <p className="text-xs text-muted-foreground mt-0.5">
                           {v.createdBy} &middot; {new Date(v.createdAt).toLocaleDateString()}
@@ -365,6 +387,13 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
                                   <RotateCcw className="w-3.5 h-3.5" />
                                   Restore as current
                                 </button>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); setSelectedVersion(null); setHasEdits(true); }}
+                                  className="flex items-center gap-1.5 px-3 py-2 bg-accent/10 text-accent rounded-lg text-xs font-medium hover:bg-accent/20 transition-colors"
+                                >
+                                  <GitBranch className="w-3.5 h-3.5" />
+                                  New version from this
+                                </button>
                                 <Link
                                   href="/iterate"
                                   onClick={(e) => e.stopPropagation()}
@@ -376,10 +405,19 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
                               </>
                             )}
                             {isCurrent && (
-                              <p className="text-xs text-success flex items-center gap-1">
-                                <Check className="w-3.5 h-3.5" />
-                                Active version
-                              </p>
+                              <div className="flex items-center gap-2">
+                                <p className="text-xs text-success flex items-center gap-1">
+                                  <Check className="w-3.5 h-3.5" />
+                                  Active version
+                                </p>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); setSelectedVersion(null); setHasEdits(true); }}
+                                  className="flex items-center gap-1.5 px-3 py-2 bg-accent/10 text-accent rounded-lg text-xs font-medium hover:bg-accent/20 transition-colors"
+                                >
+                                  <GitBranch className="w-3.5 h-3.5" />
+                                  New version from this
+                                </button>
+                              </div>
                             )}
                           </div>
                         </div>
@@ -398,14 +436,14 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl w-[440px] shadow-xl">
             <div className="px-6 py-5 border-b border-border flex items-center justify-between">
-              <h2 className="text-base font-semibold text-foreground">Save new version</h2>
+              <h2 className="text-base font-semibold text-foreground">Save new draft</h2>
               <button onClick={() => setShowSaveModal(false)} className="p-1 rounded-md hover:bg-muted text-muted-foreground">
                 <X className="w-4 h-4" />
               </button>
             </div>
             <div className="px-6 py-5">
               <p className="text-sm text-muted-foreground mb-4">
-                This will create <span className="font-semibold text-foreground">v{character.version + 1}</span> of {character.name}. The current version (v{character.version}) will still be accessible in version history.
+                This will save a new draft <span className="font-semibold text-foreground">v{character.version + 1}</span> of {character.name}. Previous versions remain accessible in version history. You can publish this draft when it&apos;s ready for the team.
               </p>
               <label className="block text-sm font-medium text-foreground mb-1.5">What changed?</label>
               <textarea
@@ -428,7 +466,7 @@ export default function CharacterDetailPage({ params }: { params: Promise<{ id: 
                 className="px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors flex items-center gap-1.5"
               >
                 <Save className="w-3.5 h-3.5" />
-                Save v{character.version + 1}
+                Save Draft v{character.version + 1}
               </button>
             </div>
           </div>

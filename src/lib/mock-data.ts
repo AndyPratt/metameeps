@@ -33,10 +33,11 @@ export const characters: Character[] = [
     scene: null,
     createdBy: "Andy Pratt",
     version: 3,
+    status: "published",
     versions: [
-      { version: 1, createdBy: "Andy Pratt", createdAt: "2026-04-15T10:00:00Z", summary: "Initial character creation" },
-      { version: 2, createdBy: "Sarah Chen", createdAt: "2026-04-20T14:30:00Z", summary: "Refined communication style, added humor guidelines" },
-      { version: 3, createdBy: "Andy Pratt", createdAt: "2026-04-28T09:15:00Z", summary: "Updated personality based on eval feedback" },
+      { version: 1, createdBy: "Andy Pratt", createdAt: "2026-04-15T10:00:00Z", summary: "Initial character creation", status: "draft" },
+      { version: 2, createdBy: "Sarah Chen", createdAt: "2026-04-20T14:30:00Z", summary: "Refined communication style, added humor guidelines", status: "published" },
+      { version: 3, createdBy: "Andy Pratt", createdAt: "2026-04-28T09:15:00Z", summary: "Updated personality based on eval feedback", status: "published" },
     ],
     configurations: [
       { id: "cfg-1", product: "Meta AI", platform: "1P Characters", promptConstraints: "Keep responses under 3 sentences. Avoid clinical terminology.", uiOverlay: "vibe-call", rubricSetId: "rub-1" },
@@ -59,9 +60,10 @@ export const characters: Character[] = [
     scene: null,
     createdBy: "Marcus Rivera",
     version: 2,
+    status: "published",
     versions: [
-      { version: 1, createdBy: "Marcus Rivera", createdAt: "2026-04-10T08:00:00Z", summary: "Initial character creation" },
-      { version: 2, createdBy: "Marcus Rivera", createdAt: "2026-04-25T16:00:00Z", summary: "Added storytelling constraints, reduced tangent tendency" },
+      { version: 1, createdBy: "Marcus Rivera", createdAt: "2026-04-10T08:00:00Z", summary: "Initial character creation", status: "draft" },
+      { version: 2, createdBy: "Marcus Rivera", createdAt: "2026-04-25T16:00:00Z", summary: "Added storytelling constraints, reduced tangent tendency", status: "published" },
     ],
     configurations: [
       { id: "cfg-3", product: "Meta AI", platform: "1P Characters", promptConstraints: "Focus on world history. Avoid modern political commentary.", uiOverlay: "vibe-call", rubricSetId: "rub-1" },
@@ -84,8 +86,9 @@ export const characters: Character[] = [
     scene: null,
     createdBy: "Andy Pratt",
     version: 1,
+    status: "draft",
     versions: [
-      { version: 1, createdBy: "Andy Pratt", createdAt: "2026-04-30T11:00:00Z", summary: "Initial character creation" },
+      { version: 1, createdBy: "Andy Pratt", createdAt: "2026-04-30T11:00:00Z", summary: "Initial character creation", status: "draft" },
     ],
     configurations: [],
     scenes: [],
@@ -106,11 +109,12 @@ export const characters: Character[] = [
     scene: null,
     createdBy: "Sarah Chen",
     version: 4,
+    status: "published",
     versions: [
-      { version: 1, createdBy: "Sarah Chen", createdAt: "2026-04-05T09:00:00Z", summary: "Initial character creation" },
-      { version: 2, createdBy: "Sarah Chen", createdAt: "2026-04-12T13:00:00Z", summary: "Added cultural sensitivity guidelines" },
-      { version: 3, createdBy: "Andy Pratt", createdAt: "2026-04-19T10:30:00Z", summary: "Refined tone for shorter interactions" },
-      { version: 4, createdBy: "Sarah Chen", createdAt: "2026-04-27T15:45:00Z", summary: "Updated based on eval — improved handling of dietary restrictions" },
+      { version: 1, createdBy: "Sarah Chen", createdAt: "2026-04-05T09:00:00Z", summary: "Initial character creation", status: "draft" },
+      { version: 2, createdBy: "Sarah Chen", createdAt: "2026-04-12T13:00:00Z", summary: "Added cultural sensitivity guidelines", status: "published" },
+      { version: 3, createdBy: "Andy Pratt", createdAt: "2026-04-19T10:30:00Z", summary: "Refined tone for shorter interactions", status: "draft" },
+      { version: 4, createdBy: "Sarah Chen", createdAt: "2026-04-27T15:45:00Z", summary: "Updated based on eval — improved handling of dietary restrictions", status: "published" },
     ],
     configurations: [
       { id: "cfg-4", product: "Meta AI", platform: "Characters in Vibes", promptConstraints: "Keep recipes simple (under 5 ingredients). No professional techniques.", uiOverlay: "metagen", rubricSetId: "rub-2" },
@@ -133,8 +137,9 @@ export const characters: Character[] = [
     scene: null,
     createdBy: "Marcus Rivera",
     version: 1,
+    status: "draft",
     versions: [
-      { version: 1, createdBy: "Marcus Rivera", createdAt: "2026-05-01T14:00:00Z", summary: "Initial character creation" },
+      { version: 1, createdBy: "Marcus Rivera", createdAt: "2026-05-01T14:00:00Z", summary: "Initial character creation", status: "draft" },
     ],
     configurations: [
       { id: "cfg-5", product: "Meta AI", platform: "1P Characters", promptConstraints: "Always check for injuries/limitations first. No extreme exercises.", uiOverlay: "vibe-call", rubricSetId: null },
@@ -157,12 +162,13 @@ export const characters: Character[] = [
     scene: null,
     createdBy: "Andy Pratt",
     version: 5,
+    status: "published",
     versions: [
-      { version: 1, createdBy: "Andy Pratt", createdAt: "2026-03-20T09:00:00Z", summary: "Initial character creation — base personality and backstory" },
-      { version: 2, createdBy: "Andy Pratt", createdAt: "2026-03-28T14:00:00Z", summary: "Added scene structure with 4 chapters" },
-      { version: 3, createdBy: "Sarah Chen", createdAt: "2026-04-05T11:30:00Z", summary: "Refined chapter progression criteria, added branching paths" },
-      { version: 4, createdBy: "Marcus Rivera", createdAt: "2026-04-15T16:00:00Z", summary: "Voice tuning, adjusted tone for urgency vs. calm scenes" },
-      { version: 5, createdBy: "Andy Pratt", createdAt: "2026-04-29T10:00:00Z", summary: "Eval-driven update — improved handling of user hesitation in crisis chapters" },
+      { version: 1, createdBy: "Andy Pratt", createdAt: "2026-03-20T09:00:00Z", summary: "Initial character creation — base personality and backstory", status: "draft" },
+      { version: 2, createdBy: "Andy Pratt", createdAt: "2026-03-28T14:00:00Z", summary: "Added scene structure with 4 chapters", status: "draft" },
+      { version: 3, createdBy: "Sarah Chen", createdAt: "2026-04-05T11:30:00Z", summary: "Refined chapter progression criteria, added branching paths", status: "published" },
+      { version: 4, createdBy: "Marcus Rivera", createdAt: "2026-04-15T16:00:00Z", summary: "Voice tuning, adjusted tone for urgency vs. calm scenes", status: "draft" },
+      { version: 5, createdBy: "Andy Pratt", createdAt: "2026-04-29T10:00:00Z", summary: "Eval-driven update — improved handling of user hesitation in crisis chapters", status: "published" },
     ],
     configurations: [
       { id: "cfg-6", product: "Meta AI", platform: "1P Characters", promptConstraints: "Maintain narrative tension. Never break the fourth wall. Adapt pacing to user engagement level.", uiOverlay: "vibe-call", rubricSetId: "rub-1" },

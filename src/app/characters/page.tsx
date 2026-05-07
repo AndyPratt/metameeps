@@ -12,6 +12,7 @@ import {
   User,
   Tag,
   BookOpen,
+  Copy,
 } from "lucide-react";
 
 export default function CharactersPage() {
@@ -141,11 +142,18 @@ export default function CharactersPage() {
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center text-lg font-semibold text-accent shrink-0">
                   {character.name[0]}
                 </div>
-                <div className="min-w-0">
-                  <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors">
-                    {character.name}
-                  </h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">v{character.version}</p>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors">
+                      {character.name}
+                    </h3>
+                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase ${
+                      character.status === "published" ? "bg-success/10 text-success" : "bg-warning/10 text-warning"
+                    }`}>
+                      {character.status}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">v{character.version}{character.clonedFrom ? " · cloned" : ""}</p>
                 </div>
               </div>
               <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
@@ -172,10 +180,22 @@ export default function CharactersPage() {
                   <User className="w-3 h-3" />
                   {character.createdBy}
                 </span>
-                <span className="flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  {new Date(character.updatedAt).toLocaleDateString()}
-                </span>
+                <div className="flex items-center gap-2">
+                  {character.createdBy !== currentUser && character.status === "published" && (
+                    <button
+                      onClick={(e) => { e.preventDefault(); }}
+                      className="flex items-center gap-1 px-1.5 py-0.5 rounded hover:bg-muted text-muted-foreground hover:text-accent transition-colors"
+                      title="Clone to my drafts"
+                    >
+                      <Copy className="w-3 h-3" />
+                      Clone
+                    </button>
+                  )}
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    {new Date(character.updatedAt).toLocaleDateString()}
+                  </span>
+                </div>
               </div>
             </Link>
           ))}

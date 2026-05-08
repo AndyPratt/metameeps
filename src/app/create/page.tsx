@@ -759,172 +759,140 @@ function Field({ label, helper, children }: { label: string; helper?: string; ch
   );
 }
 
-interface Appearance {
+interface AppearanceItem {
   id: string;
   name: string;
-  description: string;
-  mode: "create" | "extract" | "upload";
+  date: string;
+  status: "viewing" | "preview" | "final";
 }
 
 function AppearanceManager() {
-  const [appearances, setAppearances] = useState<Appearance[]>([
-    { id: "app-1", name: "Default", description: "", mode: "create" },
+  const [appearances, setAppearances] = useState<AppearanceItem[]>([
+    { id: "app-1", name: "Default", date: "May 6", status: "viewing" },
+    { id: "app-2", name: "Outdoor Setting", date: "May 5", status: "preview" },
+    { id: "app-3", name: "Studio Look", date: "May 4", status: "preview" },
   ]);
-  const [expandedId, setExpandedId] = useState<string>("app-1");
-  const [imageVariations, setImageVariations] = useState(4);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const addAppearance = () => {
-    const newApp: Appearance = {
+    const newApp: AppearanceItem = {
       id: `app-${Date.now()}`,
-      name: `Appearance ${appearances.length + 1}`,
-      description: "",
-      mode: "create",
+      name: "Untitled Appearance",
+      date: "May 7",
+      status: "preview",
     };
     setAppearances((prev) => [...prev, newApp]);
-    setExpandedId(newApp.id);
+    setSelectedId(newApp.id);
   };
 
-  const updateAppearance = (id: string, updates: Partial<Appearance>) => {
-    setAppearances((prev) => prev.map((a) => (a.id === id ? { ...a, ...updates } : a)));
-  };
-
-  const removeAppearance = (id: string) => {
-    setAppearances((prev) => prev.filter((a) => a.id !== id));
-    if (expandedId === id) setExpandedId(appearances[0]?.id || "");
-  };
+  const selected = appearances.find((a) => a.id === selectedId);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <p className="text-xs text-muted-foreground">{appearances.length} {appearances.length === 1 ? "appearance" : "appearances"}</p>
-        <button
-          onClick={addAppearance}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-accent text-white rounded-lg text-xs font-medium hover:bg-accent/90 transition-colors"
-        >
-          <Plus className="w-3.5 h-3.5" /> Add Appearance
-        </button>
-      </div>
+    <div className="space-y-6">
+      {/* List view */}
+      {!selectedId && (
+        <div className="border border-border rounded-xl divide-y divide-border">
+          {appearances.map((app) => (
+            <button
+              key={app.id}
+              onClick={() => setSelectedId(app.id)}
+              className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-muted/30 transition-colors"
+            >
+              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
+                <ImageIcon className="w-5 h-5 text-muted-foreground/40" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-foreground">{app.name}</p>
+                <p className="text-xs text-muted-foreground">{app.date}</p>
+              </div>
+              <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                app.status === "viewing" ? "bg-accent/10 text-accent" :
+                app.status === "final" ? "bg-success/10 text-success" :
+                "bg-muted text-muted-foreground"
+              }`}>
+                {app.status === "viewing" ? "Viewing" : app.status === "final" ? "Final" : "Preview"}
+              </span>
+              <button
+                onClick={(e) => { e.stopPropagation(); }}
+                className="p-1 rounded hover:bg-muted text-muted-foreground"
+              >
+                <span className="text-lg leading-none">&hellip;</span>
+              </button>
+            </button>
+          ))}
+        </div>
+      )}
 
-      {appearances.map((appearance) => {
-        const isExpanded = expandedId === appearance.id;
-        return (
-          <div key={appearance.id} className="border border-border rounded-xl overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-3 bg-muted/30">
-              <button
-                onClick={() => setExpandedId(isExpanded ? "" : appearance.id)}
-                className="flex items-center gap-3 flex-1 text-left"
-              >
-                {isExpanded ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronUp className="w-4 h-4 text-muted-foreground" />}
-                <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                  <ImageIcon className="w-5 h-5 text-muted-foreground/30" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">{appearance.name}</p>
-                  <p className="text-xs text-muted-foreground">{appearance.description ? "Configured" : "Not configured"}</p>
-                </div>
-              </button>
-              <button
-                onClick={() => removeAppearance(appearance.id)}
-                className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-danger transition-colors disabled:opacity-30"
-                disabled={appearances.length === 1}
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
+      {/* Detail view */}
+      {selectedId && selected && (
+        <div>
+          <button
+            onClick={() => setSelectedId(null)}
+            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to appearances
+          </button>
+
+          <div className="border border-border rounded-xl overflow-hidden">
+            <div className="flex items-center gap-4 px-5 py-4 border-b border-border">
+              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
+                <ImageIcon className="w-5 h-5 text-muted-foreground/40" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-foreground">{selected.name}</p>
+                <p className="text-xs text-muted-foreground">{selected.date}</p>
+              </div>
+              <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                selected.status === "viewing" ? "bg-accent/10 text-accent" :
+                selected.status === "final" ? "bg-success/10 text-success" :
+                "bg-muted text-muted-foreground"
+              }`}>
+                {selected.status === "viewing" ? "Viewing" : selected.status === "final" ? "Final" : "Preview"}
+              </span>
             </div>
 
-            {isExpanded && (
-              <div className="px-5 py-5 space-y-5">
-                <div>
-                  <label className="block text-xs font-medium text-muted-foreground mb-1.5">Appearance Name</label>
-                  <input
-                    type="text"
-                    value={appearance.name}
-                    onChange={(e) => updateAppearance(appearance.id, { name: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-muted rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/20"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-muted-foreground mb-1.5">Description</label>
-                  <textarea
-                    placeholder="Describe this appearance — what the character looks like, what they're wearing, and the environment around them..."
-                    value={appearance.description}
-                    onChange={(e) => updateAppearance(appearance.id, { description: e.target.value })}
-                    rows={3}
-                    className="w-full px-4 py-2.5 bg-muted rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20 resize-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-muted-foreground mb-2">Source</label>
-                  <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5 w-fit mb-4">
-                    {(["create", "extract", "upload"] as const).map((m) => (
-                      <button
-                        key={m}
-                        onClick={() => updateAppearance(appearance.id, { mode: m })}
-                        className={`px-4 py-2 rounded-md text-sm capitalize transition-colors ${
-                          appearance.mode === m ? "bg-white shadow-sm text-foreground font-medium" : "text-muted-foreground"
-                        }`}
-                      >
-                        {m}
-                      </button>
-                    ))}
+            <div className="p-5 space-y-5">
+              <div className="flex flex-col sm:flex-row gap-5">
+                <div className="w-full sm:w-[240px] aspect-[9/16] bg-muted rounded-xl flex items-center justify-center shrink-0">
+                  <div className="text-center">
+                    <ImageIcon className="w-10 h-10 text-muted-foreground/20 mx-auto mb-2" />
+                    <p className="text-xs text-muted-foreground">Appearance preview</p>
                   </div>
-
-                  {appearance.mode === "create" && (
-                    <div className="space-y-4">
-                      <textarea
-                        placeholder="Describe the full appearance to generate — character, outfit, pose, environment, lighting..."
-                        className="w-full h-24 px-4 py-3 bg-white border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20 resize-none"
-                      />
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <span className="text-sm text-muted-foreground">Variations:</span>
-                          <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
-                            {[1, 2, 4].map((n) => (
-                              <button key={n} onClick={() => setImageVariations(n)} className={`px-3 py-1.5 rounded-md text-sm transition-colors ${imageVariations === n ? "bg-white shadow-sm text-foreground font-medium" : "text-muted-foreground"}`}>{n}</button>
-                            ))}
-                          </div>
-                        </div>
-                        <button className="flex items-center gap-1.5 px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors">
-                          <Sparkles className="w-4 h-4" /> Generate
+                </div>
+                <div className="flex-1 space-y-4">
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Aspect Ratio</p>
+                    <div className="flex items-center gap-2">
+                      {["9:16", "1:1", "16:9"].map((ratio, i) => (
+                        <button key={ratio} className={`px-4 py-1.5 rounded-full text-sm transition-colors ${i === 0 ? "bg-accent text-white" : "bg-muted text-muted-foreground hover:text-foreground"}`}>
+                          {ratio}
                         </button>
-                      </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                        {Array.from({ length: imageVariations }).map((_, i) => (
-                          <div key={i} className="aspect-[3/4] bg-muted rounded-xl border-2 border-dashed border-border flex items-center justify-center hover:border-accent/30 transition-colors cursor-pointer">
-                            <ImageIcon className="w-8 h-8 text-muted-foreground/30" />
-                          </div>
-                        ))}
-                      </div>
+                      ))}
                     </div>
-                  )}
-
-                  {appearance.mode === "extract" && (
-                    <div className="space-y-4">
-                      <div className="flex gap-3">
-                        <input type="text" placeholder="Paste a Meta AI vibe URL..." className="flex-1 px-4 py-3 bg-white border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-accent/20" />
-                        <button className="flex items-center gap-1.5 px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors shrink-0">
-                          <ExternalLink className="w-4 h-4" /> Extract
-                        </button>
-                      </div>
-                      <p className="text-xs text-muted-foreground">The model will extract the character appearance from the vibe.</p>
-                    </div>
-                  )}
-
-                  {appearance.mode === "upload" && (
-                    <div className="border-2 border-dashed border-border rounded-xl p-10 text-center hover:border-accent/30 transition-colors cursor-pointer">
-                      <ImageIcon className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
-                      <p className="text-sm font-medium text-foreground mb-1">Drop appearance image here</p>
-                      <p className="text-xs text-muted-foreground">PNG, JPG, or WebP up to 10MB</p>
-                    </div>
-                  )}
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Source</p>
+                    <button className="flex items-center gap-2 px-4 py-2.5 bg-muted rounded-lg text-sm text-foreground hover:bg-border transition-colors">
+                      <ImageIcon className="w-4 h-4 text-muted-foreground" />
+                      Browse library
+                    </button>
+                  </div>
                 </div>
               </div>
-            )}
+            </div>
           </div>
-        );
-      })}
+        </div>
+      )}
+
+      {!selectedId && (
+        <button
+          onClick={addAppearance}
+          className="flex items-center gap-2 text-sm text-accent hover:underline"
+        >
+          <Plus className="w-4 h-4" /> Add
+        </button>
+      )}
     </div>
   );
 }
